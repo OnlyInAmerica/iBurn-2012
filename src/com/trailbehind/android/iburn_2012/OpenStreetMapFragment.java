@@ -7,6 +7,7 @@ import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,15 +46,23 @@ public class OpenStreetMapFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /*
+        setContentView(R.layout.map);
+        mapView = (MapView) findViewById(R.id.mapview);
+    	mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setBuiltInZoomControls(true);
+        mapController = mapView.getController();
+        mapController.setZoom(15);
+        GeoPoint point2 = new GeoPoint(51496994, -134733);
+        mapController.setCenter(point2);
+		*/
         
     }
-    
+   
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
     	
     	View view = inflater.inflate(R.layout.map, null);
-    	/*
     	mapView = (MapView) view.findViewById(R.id.mapview);
     	mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setBuiltInZoomControls(true);
@@ -61,10 +70,10 @@ public class OpenStreetMapFragment extends Fragment {
         mapController.setZoom(15);
         GeoPoint point2 = new GeoPoint(51496994, -134733);
         mapController.setCenter(point2);
-    	*/
+    	
     	return view;
     }
-    
+ 
     protected boolean isRouteDisplayed() {
         // TODO Auto-generated method stub
         return false;
