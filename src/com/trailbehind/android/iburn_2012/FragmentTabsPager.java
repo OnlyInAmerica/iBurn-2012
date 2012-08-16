@@ -37,12 +37,15 @@ public class FragmentTabsPager extends FragmentActivity {
     TabHost mTabHost;
     ViewPager  mViewPager;
     TabsAdapter mTabsAdapter;
+    
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.fragment_tabs_pager);
+        context = this;
         mTabHost = (TabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup();
 

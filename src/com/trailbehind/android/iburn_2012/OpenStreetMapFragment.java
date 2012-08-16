@@ -68,7 +68,7 @@ public class OpenStreetMapFragment extends Fragment {
         mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
         mapController.setZoom(15);
-        GeoPoint point2 = new GeoPoint(51496994, -134733);
+        GeoPoint point2 = new GeoPoint(40.782818, -119.209042);
         mapController.setCenter(point2);
     	
     	return view;
