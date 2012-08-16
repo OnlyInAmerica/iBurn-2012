@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">iBurn-2012</string>
+    <string name="prefs_name">Preferences</string>
+    <string name="prefs_scrollx">scrollx</string>
+    <string name="prefs_scrolly">scrolly</string>
+    <string name="prefs_zoomlevel">zoomlevel</string>
+	<string name="prefs_showlocation">showlocation</string>
+	<string name="prefs_followlocation">followlocation</string>
+</resources>
