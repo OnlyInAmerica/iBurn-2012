@@ -28,6 +28,8 @@ import android.widget.TabWidget;
 
 import java.util.ArrayList;
 
+import com.trailbehind.android.iburn_2012.data.DataUtils;
+
 /**
  * Demonstrates combining a TabHost with a ViewPager to implement a tab UI
  * that switches between tabs and also allows the user to perform horizontal
@@ -38,14 +40,14 @@ public class FragmentTabsPager extends FragmentActivity {
     ViewPager  mViewPager;
     TabsAdapter mTabsAdapter;
     
-    public static Context context;
+    public static iBurnApplication app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.fragment_tabs_pager);
-        context = this;
+        app = (iBurnApplication) getApplicationContext();
         mTabHost = (TabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup();
 
@@ -65,6 +67,9 @@ public class FragmentTabsPager extends FragmentActivity {
         if (savedInstanceState != null) {
             mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
         }
+        
+        // TODO: Populate database on first start
+        new DataUtils.ImportJsonToCampTable().execute();
     }
 
     @Override

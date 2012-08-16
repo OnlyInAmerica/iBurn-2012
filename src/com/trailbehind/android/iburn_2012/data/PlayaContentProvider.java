@@ -20,16 +20,24 @@ public class PlayaContentProvider extends ContentProvider {
 		private DBWrapper database;
 
 		// Used for the UriMacher
-		private static final int CAMPS = 10;
-		private static final int CAMP_ID = 20;
+		private static final int CAMPS = 1;
+		private static final int CAMP_ID = 2;
+		private static final int EVENTS = 3;
+		private static final int EVENT_ID = 4;
+		private static final int ART = 5;
+		private static final int ART_ID = 6;
 
 		private static final String AUTHORITY = "com.trailbehind.android.iburn.playacontentprovider";
 
-		private static final String CAMP_BASE_PATH = "playa";
-		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-				+ "/" + CAMP_BASE_PATH);
+		private static final String CAMP_BASE_PATH = "camp";
+		private static final String EVENT_BASE_PATH = "event";
+		private static final String ART_BASE_PATH = "art";
 		
 		public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY + "/");
+		
+		public static final Uri CAMP_URI = AUTHORITY_URI.buildUpon().appendPath(CAMP_BASE_PATH).build();
+		public static final Uri EVENT_URI = AUTHORITY_URI.buildUpon().appendPath(EVENT_BASE_PATH).build();
+		public static final Uri ART_URI = AUTHORITY_URI.buildUpon().appendPath(ART_BASE_PATH).build();
 
 		public static final String CAMP_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
 				+ "/camps";
@@ -40,6 +48,10 @@ public class PlayaContentProvider extends ContentProvider {
 		static {
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH, CAMPS);
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH + "/#", CAMP_ID);
+			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH, EVENTS);
+			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH + "/#", EVENT_ID);
+			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH, ART);
+			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH + "/#", ART_ID);
 		}
 
 		@Override
@@ -80,7 +92,6 @@ public class PlayaContentProvider extends ContentProvider {
 					selectionArgs, null, null, sortOrder);
 			// Make sure that potential listeners are getting notified
 			cursor.setNotificationUri(getContext().getContentResolver(), uri);
-			int len = cursor.getCount();
 			return cursor;
 		}
 
@@ -93,7 +104,6 @@ public class PlayaContentProvider extends ContentProvider {
 		public Uri insert(Uri uri, ContentValues values) {
 			int uriType = sURIMatcher.match(uri);
 			SQLiteDatabase sqlDB = database.getWritableDatabase();
-			int rowsDeleted = 0;
 			long id = 0;
 			switch (uriType) {
 			case CAMPS:
@@ -145,7 +155,7 @@ public class PlayaContentProvider extends ContentProvider {
 			int rowsUpdated = 0;
 			switch (uriType) {
 			case CAMPS:
-				rowsUpdated = sqlDB.update(DBWrapper.TABLE_NAME, 
+				rowsUpdated = sqlDB.update(CampTable.TABLE_NAME, 
 						values, 
 						selection,
 						selectionArgs);
@@ -153,12 +163,12 @@ public class PlayaContentProvider extends ContentProvider {
 			case CAMP_ID:
 				String id = uri.getLastPathSegment();
 				if (TextUtils.isEmpty(selection)) {
-					rowsUpdated = sqlDB.update(DBWrapper.TABLE_NAME, 
+					rowsUpdated = sqlDB.update(CampTable.TABLE_NAME, 
 							values,
 							CampTable.COLUMN_ID + "=" + id, 
 							null);
 				} else {
-					rowsUpdated = sqlDB.update(DBWrapper.TABLE_NAME, 
+					rowsUpdated = sqlDB.update(CampTable.TABLE_NAME, 
 							values,
 							CampTable.COLUMN_ID + "=" + id 
 							+ " and " 

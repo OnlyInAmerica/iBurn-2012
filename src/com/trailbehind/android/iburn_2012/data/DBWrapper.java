@@ -23,7 +23,6 @@ class DBWrapper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     
     //TABLE INFO
-    
     public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
     public static final String TABLE_NAME = CampTable.TABLE_NAME;
 
