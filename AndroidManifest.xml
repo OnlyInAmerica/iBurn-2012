@@ -18,10 +18,15 @@
     
 
     <application
-        android:name="com.trailbehind.android.iburn.iBurnApplication"
+        android:name="com.trailbehind.android.iburn_2012.iBurnApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+       									>
+       	<provider
+       		android:authorities="com.trailbehind.android.iburn_2012.data.playacontentprovider"
+       		android:name=".data.PlayaContentProvider"
+       		android:exported="false" >
+		</provider> 
         
         <activity
             android:name=".FragmentTabsPager"

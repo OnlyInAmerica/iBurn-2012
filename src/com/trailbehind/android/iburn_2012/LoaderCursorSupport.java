@@ -16,6 +16,9 @@
 
 package com.trailbehind.android.iburn_2012;
 
+import com.trailbehind.android.iburn_2012.data.CampTable;
+import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
+
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
@@ -73,9 +76,8 @@ public class LoaderCursorSupport extends FragmentActivity {
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            // Give some text to display if there is no data.  In a real
-            // application this would come from a resource.
-            setEmptyText("No phone numbers");
+            // Text to display before ListView is populated
+            setEmptyText("Loading Camps");
 
             // We have a menu item to show in action bar.
             setHasOptionsMenu(true);
@@ -83,7 +85,7 @@ public class LoaderCursorSupport extends FragmentActivity {
             // Create an empty adapter we will use to display the loaded data.
             mAdapter = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1, null,
-                    new String[] { People.DISPLAY_NAME },
+                    new String[] { CampTable.COLUMN_NAME },
                     new int[] { android.R.id.text1}, 0);
             setListAdapter(mAdapter);
 
@@ -133,10 +135,10 @@ public class LoaderCursorSupport extends FragmentActivity {
             Log.i("FragmentComplexList", "Item clicked: " + id);
         }
 
-        // These are the Contacts rows that we will retrieve.
-        static final String[] CONTACTS_SUMMARY_PROJECTION = new String[] {
-            People._ID,
-            People.DISPLAY_NAME,
+        // These are the Camp rows that we will retrieve.
+        static final String[] CAMP_PROJECTION = new String[] {
+            CampTable.COLUMN_ID,
+            CampTable.COLUMN_NAME,
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -144,20 +146,23 @@ public class LoaderCursorSupport extends FragmentActivity {
             // sample only has one Loader, so we don't care about the ID.
             // First, pick the base URI to use depending on whether we are
             // currently filtering.
-            Uri baseUri;
+            /*
+        	Uri baseUri;
+            
             if (mCurFilter != null) {
                 baseUri = Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri.encode(mCurFilter));
             } else {
                 baseUri = People.CONTENT_URI;
             }
-
+			*/
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
+        	/*
             String select = "((" + People.DISPLAY_NAME + " NOTNULL) AND ("
                     + People.DISPLAY_NAME + " != '' ))";
-            return new CursorLoader(getActivity(), baseUri,
-                    CONTACTS_SUMMARY_PROJECTION, select, null,
-                    People.DISPLAY_NAME + " COLLATE LOCALIZED ASC");
+            */
+            return new CursorLoader(getActivity(), PlayaContentProvider.CAMP_URI,
+                    CAMP_PROJECTION, null, null, CampTable.COLUMN_NAME + " ASC");
         }
 
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

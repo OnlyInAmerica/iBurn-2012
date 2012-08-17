@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.google.gson.Gson;
@@ -15,13 +16,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.trailbehind.android.iburn_2012.FragmentTabsPager;
 import android.content.ContentValues;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class DataUtils {
 	
-	private static final String CAMP_DATA_PATH = "/playa_data/camp_data.json";
+	private static final String CAMP_DATA_PATH = "playa-json/camp_data.json";
 	// Relative to getFilesDir() (/data/data/app.namespace/)
 	
 	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Void>{
@@ -33,19 +35,19 @@ public class DataUtils {
 				return null;
 			}
 			
-			File camp_data = new File(FragmentTabsPager.app.getFilesDir().getAbsoluteFile() + CAMP_DATA_PATH);
-			if (!camp_data.exists()){
-		            Log.d("ImportJsonToCampTable", "Camp data not found!");
-		            return null;
-		     }
-			
-			
+			AssetManager assets = FragmentTabsPager.app.getAssets();
 			Gson gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.CampsDeserializer()).create();
+			
 			try {
+				//String[] asset_list = assets.list("playa-json");
+				// Get Asset
+				InputStream is = assets.open(CAMP_DATA_PATH);
 				// Parse JSON
-				ArrayList<ContentValues> result = gson.fromJson(FileUtils.fileToString(camp_data), ArrayList.class);
+				ArrayList<ContentValues> result = gson.fromJson(inputStreamToChar(is), ArrayList.class);
 				// Insert JSON into database
+				//content://com.trailbehind.android.iburn.playacontentprovider/camp
 				FragmentTabsPager.app.contentValuesToTable(result, PlayaContentProvider.CAMP_URI);
+				Log.d("ImportJsonToCampTable","Camps sent to database");
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -61,6 +63,16 @@ public class DataUtils {
 
 	    }
 		
+	}
+	
+	public static String inputStreamToChar(InputStream is) throws IOException{
+		BufferedReader r = new BufferedReader(new InputStreamReader(is));
+		StringBuilder total = new StringBuilder();
+		String line;
+		while ((line = r.readLine()) != null) {
+		    total.append(line);
+		}
+		return total.toString();
 	}
 	
 

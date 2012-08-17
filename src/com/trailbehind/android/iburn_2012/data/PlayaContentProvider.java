@@ -27,7 +27,7 @@ public class PlayaContentProvider extends ContentProvider {
 		private static final int ART = 5;
 		private static final int ART_ID = 6;
 
-		private static final String AUTHORITY = "com.trailbehind.android.iburn.playacontentprovider";
+		private static final String AUTHORITY = "com.trailbehind.android.iburn_2012.data.playacontentprovider";
 
 		private static final String CAMP_BASE_PATH = "camp";
 		private static final String EVENT_BASE_PATH = "event";

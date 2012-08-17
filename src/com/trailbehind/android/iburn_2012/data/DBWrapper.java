@@ -43,6 +43,7 @@ class DBWrapper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_STATEMENT);
+        Log.d("DBWrapper","Creating DB");
     }
     
     /**
