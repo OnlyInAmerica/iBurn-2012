@@ -146,23 +146,28 @@ public class LoaderCursorSupport extends FragmentActivity {
             // sample only has one Loader, so we don't care about the ID.
             // First, pick the base URI to use depending on whether we are
             // currently filtering.
-            /*
-        	Uri baseUri;
             
+        	Uri baseUri;
+            String ordering = null;
             if (mCurFilter != null) {
-                baseUri = Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri.encode(mCurFilter));
+                baseUri = Uri.withAppendedPath(PlayaContentProvider.CAMP_SEARCH_URI, Uri.encode(mCurFilter));
             } else {
-                baseUri = People.CONTENT_URI;
+                baseUri = PlayaContentProvider.CAMP_URI;
+                ordering = CampTable.COLUMN_NAME + " ASC";
             }
-			*/
+			
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
         	/*
             String select = "((" + People.DISPLAY_NAME + " NOTNULL) AND ("
                     + People.DISPLAY_NAME + " != '' ))";
-            */
+            
             return new CursorLoader(getActivity(), PlayaContentProvider.CAMP_URI,
-                    CAMP_PROJECTION, null, null, CampTable.COLUMN_NAME + " ASC");
+                    CAMP_PROJECTION, select, null, CampTable.COLUMN_NAME + " ASC");
+            */
+            return new CursorLoader(getActivity(), baseUri,
+                    CAMP_PROJECTION, null, null,
+                    ordering);
         }
 
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

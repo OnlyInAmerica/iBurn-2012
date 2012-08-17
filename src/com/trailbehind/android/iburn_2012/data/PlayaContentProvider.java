@@ -20,12 +20,13 @@ public class PlayaContentProvider extends ContentProvider {
 		private DBWrapper database;
 
 		// Used for the UriMacher
-		private static final int CAMPS = 1;
-		private static final int CAMP_ID = 2;
-		private static final int EVENTS = 3;
-		private static final int EVENT_ID = 4;
-		private static final int ART = 5;
-		private static final int ART_ID = 6;
+		private static final int CAMPS = 1; 		// Query all
+		private static final int CAMP_ID = 2; 		// Query single entry by id
+		private static final int CAMP_SEARCH = 3; 	// Search title by string
+		private static final int EVENTS = 4;
+		private static final int EVENT_ID = 5;
+		private static final int ART = 7;
+		private static final int ART_ID = 8;
 
 		private static final String AUTHORITY = "com.trailbehind.android.iburn_2012.data.playacontentprovider";
 
@@ -36,6 +37,7 @@ public class PlayaContentProvider extends ContentProvider {
 		public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY + "/");
 		
 		public static final Uri CAMP_URI = AUTHORITY_URI.buildUpon().appendPath(CAMP_BASE_PATH).build();
+		public static final Uri CAMP_SEARCH_URI = AUTHORITY_URI.buildUpon().appendPath(CAMP_BASE_PATH).appendPath("search").build();
 		public static final Uri EVENT_URI = AUTHORITY_URI.buildUpon().appendPath(EVENT_BASE_PATH).build();
 		public static final Uri ART_URI = AUTHORITY_URI.buildUpon().appendPath(ART_BASE_PATH).build();
 
@@ -48,6 +50,7 @@ public class PlayaContentProvider extends ContentProvider {
 		static {
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH, CAMPS);
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH + "/#", CAMP_ID);
+			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH + "/search/*", CAMP_SEARCH);
 			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH, EVENTS);
 			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH + "/#", EVENT_ID);
 			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH, ART);
@@ -82,6 +85,10 @@ public class PlayaContentProvider extends ContentProvider {
 				// Adding the ID to the original query
 				queryBuilder.appendWhere(CampTable.COLUMN_ID + "="
 						+ uri.getLastPathSegment());
+				break;
+			case CAMP_SEARCH:
+				queryBuilder.appendWhere(CampTable.COLUMN_NAME + " LIKE "
+						+ "\"%" + uri.getLastPathSegment()+"%\"");
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
