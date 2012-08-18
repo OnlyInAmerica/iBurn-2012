@@ -21,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
@@ -41,10 +42,15 @@ public class FragmentTabsPager extends FragmentActivity {
     TabsAdapter mTabsAdapter;
     
     public static iBurnApplication app;
+    
+    public static int display_width = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Display display = getWindowManager().getDefaultDisplay();
+        display_width = display.getWidth();
 
         setContentView(R.layout.fragment_tabs_pager);
         app = (iBurnApplication) getApplicationContext();
@@ -70,6 +76,7 @@ public class FragmentTabsPager extends FragmentActivity {
         
         // TODO: Populate database on first start
         new DataUtils.ImportJsonToCampTable().execute();
+        
     }
 
     @Override
