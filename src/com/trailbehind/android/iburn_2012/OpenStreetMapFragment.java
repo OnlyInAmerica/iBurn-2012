@@ -1,11 +1,16 @@
 package com.trailbehind.android.iburn_2012;
 import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.QuadTreeTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MyLocationOverlay;
+import org.osmdroid.views.overlay.TilesOverlay;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -61,10 +66,19 @@ public class OpenStreetMapFragment extends Fragment {
    
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-    	
+    	// http://iburn.s3.amazonaws.com/2012
+    	final MapTileProviderBasic tileProvider = new MapTileProviderBasic(FragmentTabsPager.app);
+		final ITileSource tileSource = new XYTileSource("burn", null, 5, 18, 256, ".png",
+		                    "http://iburn.s3.amazonaws.com/2012/");
+		((XYTileSource) tileSource).isSourceTMS = true;
+		tileProvider.setTileSource(tileSource);
+		final TilesOverlay tilesOverlay = new TilesOverlay(tileProvider, FragmentTabsPager.app);
+		
     	View view = inflater.inflate(R.layout.map, null);
     	mapView = (MapView) view.findViewById(R.id.mapview);
-    	mapView.setTileSource(TileSourceFactory.MAPNIK);
+    	//mapView.setTileSource(TileSourceFactory.MAPNIK);
+    	mapView.setTileSource(tileSource);
+    	//mapView.getOverlays().add(tilesOverlay);
         mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
         mapController.setZoom(15);
