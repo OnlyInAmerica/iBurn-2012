@@ -16,6 +16,8 @@
 package com.trailbehind.android.iburn_2012;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -44,6 +46,11 @@ public class FragmentTabsPager extends FragmentActivity {
     public static iBurnApplication app;
     
     public static int display_width = -1;
+    
+    Resources res;
+    
+    private SharedPreferences prefs;
+	private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +72,27 @@ public class FragmentTabsPager extends FragmentActivity {
                 OpenStreetMapFragment.class, null);
         mTabsAdapter.addTab(mTabHost.newTabSpec("camps").setIndicator("Camps"),
                 CampFragment.CursorLoaderListFragment.class, null);
+        /*
         mTabsAdapter.addTab(mTabHost.newTabSpec("events").setIndicator("Events"),
                 LoaderCustomSupport.AppListFragment.class, null);
         mTabsAdapter.addTab(mTabHost.newTabSpec("art").setIndicator("Art"),
                 LoaderThrottleSupport.ThrottledLoaderListFragment.class, null);
-
+	*/
         if (savedInstanceState != null) {
             mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
         }
         
         // TODO: Populate database on first start
-        new DataUtils.ImportJsonToCampTable().execute();
+        res = getResources();
+        prefs = getSharedPreferences("PREFS", 0);
+        editor = prefs.edit();
+
+        if(prefs.getBoolean("first_timer", true)){
+        	new DataUtils.ImportJsonToCampTable().execute();
+        	editor.putBoolean("first_timer", false);
+	        editor.commit();
+        }
+        
         
     }
 
