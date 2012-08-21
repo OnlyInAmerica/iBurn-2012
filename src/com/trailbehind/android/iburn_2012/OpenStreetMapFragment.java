@@ -114,6 +114,8 @@ public class OpenStreetMapFragment extends Fragment {
         mLocationOverlay = new MyLocationOverlay(FragmentTabsPager.app, mapView,
 				mResourceProxy);
 		mapView.getOverlays().add(this.mLocationOverlay);
+		//mapView.setMultiTouchControls(true);
+		
     	
     	//mapView = (MapView) view.findViewById(R.id.mapview);
     	BoundingBoxE6 bounds = new BoundingBoxE6(northEast, southWest);

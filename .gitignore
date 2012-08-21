@@ -1,5 +1,6 @@
-bin/
+#bin/
+*.class
 #gen/
 SECRETS.java
-lint.xml
+#lint.xml
 .DS_STORE
