@@ -18,7 +18,7 @@ public class CampTable {
     public static final String COLUMN_CONTACT = "contact";
     
     public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HOMETOWN, COLUMN_URL,
-    	COLUMN_YEAR, COLUMN_CAMP_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT};
+    	COLUMN_YEAR, COLUMN_CAMP_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
 	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " 
