@@ -1,5 +1,6 @@
 package com.trailbehind.android.iburn_2012;
 
+import org.osmdroid.ResourceProxy;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.modules.MapTileAssetProvider;
@@ -21,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 /**
 * Based on osmdroid default map view activity.
@@ -50,6 +53,8 @@ public class OpenStreetMapFragment extends Fragment {
     private BoundedMapView mapView;
     //private MapView mapView;
     
+    private MyLocationOverlay mLocationOverlay;
+	private ResourceProxy mResourceProxy;
     
     // Map bounds
     private final GeoPoint northEast = new GeoPoint(40802822, -119172673);
@@ -98,11 +103,18 @@ public class OpenStreetMapFragment extends Fragment {
         // .northeast = {.latitude = 40.802822, .longitude = -119.172673}, 
         //.southwest = {.latitude = 40.759210, .longitude = -119.23454}})
         // Bounds offset Lat .006720
-		
-		
+        
+        
+
 		//MapTileAssetProvider mtap = new MapTileAssetProvider(assets, tileSource, 0);
     	View view = inflater.inflate(R.layout.map, null);
     	mapView = (BoundedMapView) view.findViewById(R.id.mapview);
+    	
+    	mResourceProxy = new ResourceProxyImpl(FragmentTabsPager.app);
+        mLocationOverlay = new MyLocationOverlay(FragmentTabsPager.app, mapView,
+				mResourceProxy);
+		mapView.getOverlays().add(this.mLocationOverlay);
+    	
     	//mapView = (MapView) view.findViewById(R.id.mapview);
     	BoundingBoxE6 bounds = new BoundingBoxE6(northEast, southWest);
     	mapView.setScrollableAreaLimit(bounds);
@@ -116,6 +128,18 @@ public class OpenStreetMapFragment extends Fragment {
         mapController.setCenter(point2);
     	
     	return view;
+    }
+    
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	mLocationOverlay.enableMyLocation();
+    }
+    
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	mLocationOverlay.disableMyLocation();
     }
  
     protected boolean isRouteDisplayed() {
