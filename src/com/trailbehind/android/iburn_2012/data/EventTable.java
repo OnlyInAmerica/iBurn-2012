@@ -26,7 +26,7 @@ public class EventTable {
     	COLUMN_START_TIME, COLUMN_END_TIME};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
-	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " 
+	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " + COLUMN_CHECK_LOCATION + " integer, " 
 	        +  COLUMN_ALL_DAY + " integer, "+ COLUMN_URL +" text, " 
 	        +  COLUMN_YEAR + " integer, " + COLUMN_HOST_CAMP_ID +" integer, " 
 	        +  COLUMN_HOST_CAMP_NAME + " text, " + COLUMN_START_TIME + " text, "

@@ -100,54 +100,87 @@ public static class EventsDeserializer implements JsonDeserializer<ArrayList<Con
 				object = array.get(x).getAsJsonObject();
 				ContentValues cv = new ContentValues();
 				try{
-					if(object.has(CampJSON.KEY_NAME))
-						if(!object.get(CampJSON.KEY_NAME).isJsonNull())
-						cv.put(CampTable.COLUMN_NAME, object.get(CampJSON.KEY_NAME).getAsString()); 
+					if(object.has(EventJSON.KEY_NAME))
+						if(!object.get(EventJSON.KEY_NAME).isJsonNull())
+						cv.put(EventTable.COLUMN_NAME, object.get(EventJSON.KEY_NAME).getAsString()); 
 					
-					if(object.has(CampJSON.KEY_DESCRIPTION))
-						if(!object.get(CampJSON.KEY_DESCRIPTION).isJsonNull())
-						cv.put(CampTable.COLUMN_DESCRIPTION, object.get(CampJSON.KEY_DESCRIPTION).getAsString());
+					if(object.has(EventJSON.KEY_DESCRIPTION))
+						if(!object.get(EventJSON.KEY_DESCRIPTION).isJsonNull())
+						cv.put(EventTable.COLUMN_DESCRIPTION, object.get(EventJSON.KEY_DESCRIPTION).getAsString());
 					
-					if(object.has(CampJSON.KEY_CAMP_ID))
-						if(!object.get(CampJSON.KEY_CAMP_ID).isJsonNull())
-						cv.put(CampTable.COLUMN_CAMP_ID, object.get(CampJSON.KEY_CAMP_ID).getAsInt()); 
+					if(object.has(EventJSON.KEY_ALL_DAY))
+						if(!object.get(EventJSON.KEY_ALL_DAY).isJsonNull())
+						cv.put(EventTable.COLUMN_ALL_DAY, object.get(EventJSON.KEY_ALL_DAY).getAsInt()); 
 					
-					if(object.has(CampJSON.KEY_CONTACT))
-						if(!object.get(CampJSON.KEY_CONTACT).isJsonNull())
-							cv.put(CampTable.COLUMN_CONTACT, object.get(CampJSON.KEY_CONTACT).getAsString()); 
+					if(object.has(EventJSON.KEY_CHECK_LOCATION))
+						if(!object.get(EventJSON.KEY_CHECK_LOCATION).isJsonNull())
+							cv.put(EventTable.COLUMN_CHECK_LOCATION, object.get(EventJSON.KEY_CHECK_LOCATION).getAsString()); 
 					
-					if(object.has(CampJSON.KEY_HOMETOWN))
-						if(!object.get(CampJSON.KEY_HOMETOWN).isJsonNull())
-						cv.put(CampTable.COLUMN_HOMETOWN, object.get(CampJSON.KEY_HOMETOWN).getAsString()); 
+					if(object.has(EventJSON.KEY_HOST_CAMP)){
+						if(!object.get(EventJSON.KEY_HOST_CAMP).isJsonNull()){
+							JsonObject camp = object.get(EventJSON.KEY_HOST_CAMP).getAsJsonObject();
+							if(camp.has(EventJSON.KEY_HOST_CAMP_NAME))
+								if(!camp.get(EventJSON.KEY_HOST_CAMP_NAME).isJsonNull())
+									cv.put(EventTable.COLUMN_HOST_CAMP_NAME, camp.get(EventJSON.KEY_HOST_CAMP).getAsString());
+									
+							if(camp.has(EventJSON.KEY_HOST_CAMP_ID))
+								if(!camp.get(EventJSON.KEY_HOST_CAMP_ID).isJsonNull())
+									cv.put(EventTable.COLUMN_HOST_CAMP_ID, camp.get(EventJSON.KEY_HOST_CAMP_ID).getAsString()); 
+						}
+					}
 					
-					if(object.has(CampJSON.KEY_LATITUDE))
-						if(!object.get(CampJSON.KEY_LATITUDE).isJsonNull())
-						cv.put(CampTable.COLUMN_LATITUDE, object.get(CampJSON.KEY_LATITUDE).getAsDouble()); 
+					if(object.has(EventJSON.KEY_LATITUDE))
+						if(!object.get(EventJSON.KEY_LATITUDE).isJsonNull())
+						cv.put(EventTable.COLUMN_LATITUDE, object.get(EventJSON.KEY_LATITUDE).getAsDouble()); 
 					
-					if(object.has(CampJSON.KEY_LONGITUDE))
-						if(!object.get(CampJSON.KEY_LONGITUDE).isJsonNull())
-						cv.put(CampTable.COLUMN_LONGITUDE, object.get(CampJSON.KEY_LONGITUDE).getAsDouble()); 
+					if(object.has(EventJSON.KEY_LONGITUDE))
+						if(!object.get(EventJSON.KEY_LONGITUDE).isJsonNull())
+						cv.put(EventTable.COLUMN_LONGITUDE, object.get(EventJSON.KEY_LONGITUDE).getAsDouble()); 
 					
-					if(object.has(CampJSON.KEY_LOCATION))
-						if(!object.get(CampJSON.KEY_LOCATION).isJsonNull())
-						cv.put(CampTable.COLUMN_LOCATION, object.get(CampJSON.KEY_LOCATION).getAsString());
+					if(object.has(EventJSON.KEY_LOCATION))
+						if(!object.get(EventJSON.KEY_LOCATION).isJsonNull())
+						cv.put(EventTable.COLUMN_LOCATION, object.get(EventJSON.KEY_LOCATION).getAsString());
 					
-					if(object.has(CampJSON.KEY_YEAR))
-						if(!object.get(CampJSON.KEY_YEAR).isJsonNull())
-						cv.put(CampTable.COLUMN_YEAR, ((JsonObject)object.get(CampJSON.KEY_YEAR)).get(CampJSON.KEY_YEAR).getAsInt());
+					if(object.has(EventJSON.KEY_YEAR))
+						if(!object.get(EventJSON.KEY_YEAR).isJsonNull())
+						cv.put(EventTable.COLUMN_YEAR, ((JsonObject)object.get(EventJSON.KEY_YEAR)).get(EventJSON.KEY_YEAR).getAsInt());
 					
-					if(object.has(CampJSON.KEY_URL))
-						if(!object.get(CampJSON.KEY_URL).isJsonNull())
-						cv.put(CampTable.COLUMN_URL, object.get(CampJSON.KEY_URL).getAsString());
+					if(object.has(EventJSON.KEY_URL))
+						if(!object.get(EventJSON.KEY_URL).isJsonNull())
+						cv.put(EventTable.COLUMN_URL, object.get(EventJSON.KEY_URL).getAsString());
 					
-				    result.add(cv);
+					if(object.has(EventJSON.KEY_OCCURENCE_SET)){
+						if(!object.get(EventJSON.KEY_OCCURENCE_SET).isJsonNull()){
+							JsonArray occurences = object.get(EventJSON.KEY_OCCURENCE_SET).getAsJsonArray();
+							JsonObject occurence;
+							for(int y=0;y<occurences.size();y++){
+								occurence = (JsonObject) occurences.get(y);
+								
+								if(occurence.has(EventJSON.KEY_OCCURENCE_START_TIME))
+									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull())
+										cv.put(EventTable.COLUMN_START_TIME, occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
+								
+								if(occurence.has(EventJSON.KEY_OCCURENCE_START_TIME))
+									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull())
+										cv.put(EventTable.COLUMN_START_TIME, occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
+								
+								// Java passes method arguments by-value
+								// So we can send multiple entries which
+								// differ only by start and end time
+								result.add(cv);	
+							}
+							
+						}
+					}
+					
+				    
 			    } catch(Throwable t){
 			    	throw new JsonParseException(t);
 			    }				
-			}
+			}// end event loop
 
 		    return result;
-		}
-	}
+		}// end deserialize
+	} // end EventDeserializer
 
 }
