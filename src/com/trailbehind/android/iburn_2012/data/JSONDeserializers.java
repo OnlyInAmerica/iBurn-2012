@@ -85,7 +85,7 @@ public class JSONDeserializers {
 		}
 	}
 	
-public static class EventsDeserializer implements JsonDeserializer<ArrayList<ContentValues>>{
+	public static class EventsDeserializer implements JsonDeserializer<ArrayList<ContentValues>>{
 		
 		public ArrayList<ContentValues> deserialize(JsonElement json, Type type,
 		        JsonDeserializationContext context) throws JsonParseException {
@@ -182,5 +182,86 @@ public static class EventsDeserializer implements JsonDeserializer<ArrayList<Con
 		    return result;
 		}// end deserialize
 	} // end EventDeserializer
+	
+	public static class ArtDeserializer implements JsonDeserializer<ArrayList<ContentValues>>{
+		
+		public ArrayList<ContentValues> deserialize(JsonElement json, Type type,
+		        JsonDeserializationContext context) throws JsonParseException {
+			
+			ArrayList<ContentValues> result = new ArrayList<ContentValues>();
+	
+			JsonArray array= json.getAsJsonArray();
+			int len = array.size();
+			JsonObject object;
+			
+			for(int x=0; x<len; x++){
+				object = array.get(x).getAsJsonObject();
+				ContentValues cv = new ContentValues();
+				try{
+					if(object.has(ArtJSON.KEY_NAME))
+						if(!object.get(ArtJSON.KEY_NAME).isJsonNull())
+						cv.put(ArtTable.COLUMN_NAME, object.get(ArtJSON.KEY_NAME).getAsString()); 
+					
+					if(object.has(ArtJSON.KEY_DESCRIPTION))
+						if(!object.get(ArtJSON.KEY_DESCRIPTION).isJsonNull())
+						cv.put(ArtTable.COLUMN_DESCRIPTION, object.get(ArtJSON.KEY_DESCRIPTION).getAsString());
+					
+					if(object.has(ArtJSON.KEY_ARTIST))
+						if(!object.get(ArtJSON.KEY_ARTIST).isJsonNull())
+						cv.put(ArtTable.COLUMN_ARTIST, object.get(ArtJSON.KEY_ARTIST).getAsInt());
+					
+					if(object.has(ArtJSON.KEY_ART_ID))
+						if(!object.get(ArtJSON.KEY_ART_ID).isJsonNull())
+						cv.put(ArtTable.COLUMN_ART_ID, object.get(ArtJSON.KEY_ART_ID).getAsInt()); 
+					
+					if(object.has(ArtJSON.KEY_CONTACT))
+						if(!object.get(ArtJSON.KEY_CONTACT).isJsonNull())
+							cv.put(ArtTable.COLUMN_CONTACT, object.get(ArtJSON.KEY_CONTACT).getAsString()); 
+					
+					if(object.has(ArtJSON.KEY_LATITUDE))
+						if(!object.get(ArtJSON.KEY_LATITUDE).isJsonNull())
+						cv.put(ArtTable.COLUMN_LATITUDE, object.get(ArtJSON.KEY_LATITUDE).getAsDouble()); 
+					
+					if(object.has(ArtJSON.KEY_LONGITUDE))
+						if(!object.get(ArtJSON.KEY_LONGITUDE).isJsonNull())
+						cv.put(ArtTable.COLUMN_LONGITUDE, object.get(ArtJSON.KEY_LONGITUDE).getAsDouble()); 
+					
+					if(object.has(ArtJSON.KEY_CIRCULAR_STREET))
+						if(!object.get(ArtJSON.KEY_CIRCULAR_STREET).isJsonNull())
+						cv.put(ArtTable.COLUMN_CIRCULAR_STREET, object.get(ArtJSON.KEY_CIRCULAR_STREET).getAsString());
+					
+					if(object.has(ArtJSON.KEY_TIME_ADDRESS))
+						if(!object.get(ArtJSON.KEY_TIME_ADDRESS).isJsonNull())
+						cv.put(ArtTable.COLUMN_TIME_ADDRESS, object.get(ArtJSON.KEY_TIME_ADDRESS).getAsString());
+					
+					if(object.has(ArtJSON.KEY_HOUR))
+						if(!object.get(ArtJSON.KEY_HOUR).isJsonNull())
+						cv.put(ArtTable.COLUMN_HOUR, object.get(ArtJSON.KEY_HOUR).getAsInt());
+					
+					if(object.has(ArtJSON.KEY_MINUTE))
+						if(!object.get(ArtJSON.KEY_MINUTE).isJsonNull())
+						cv.put(ArtTable.COLUMN_MINUTE, object.get(ArtJSON.KEY_MINUTE).getAsInt());
+					
+					if(object.has(ArtJSON.KEY_DISTANCE))
+						if(!object.get(ArtJSON.KEY_DISTANCE).isJsonNull())
+						cv.put(ArtTable.COLUMN_DISTANCE, object.get(ArtJSON.KEY_DISTANCE).getAsDouble());
+					
+					if(object.has(ArtJSON.KEY_YEAR))
+						if(!object.get(ArtJSON.KEY_YEAR).isJsonNull())
+						cv.put(ArtTable.COLUMN_YEAR, ((JsonObject)object.get(ArtJSON.KEY_YEAR)).get(ArtJSON.KEY_YEAR).getAsInt());
+					
+					if(object.has(ArtJSON.KEY_URL))
+						if(!object.get(ArtJSON.KEY_URL).isJsonNull())
+						cv.put(ArtTable.COLUMN_URL, object.get(ArtJSON.KEY_URL).getAsString());
+					
+				    result.add(cv);
+			    } catch(Throwable t){
+			    	throw new JsonParseException(t);
+			    }				
+			}
+
+		    return result;
+		}
+	}
 
 }
