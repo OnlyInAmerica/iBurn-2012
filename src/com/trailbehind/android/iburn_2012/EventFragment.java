@@ -73,9 +73,6 @@ public class EventFragment extends FragmentActivity {
 
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
-        
-        // TextView to display when no ListView items are present
-        private TextView emptyText;
 
         @Override
         public void restartLoader(){
@@ -113,15 +110,11 @@ public class EventFragment extends FragmentActivity {
             getLoaderManager().initLoader(0, null, this);
         }
 
-        @Override public void onListItemClick(ListView l, View v, int position, long id) {
-            // Insert desired behavior here.
-            Log.i("FragmentComplexList", "Item clicked: " + id);
-        }
-
         // These are the Camp rows that we will retrieve.
         static final String[] EVENT_PROJECTION = new String[] {
             EventTable.COLUMN_ID,
             EventTable.COLUMN_NAME,
+            EventTable.COLUMN_START_TIME,
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -136,7 +129,7 @@ public class EventFragment extends FragmentActivity {
                 baseUri = Uri.withAppendedPath(PlayaContentProvider.EVENT_SEARCH_URI, Uri.encode(mCurFilter));
             } else {
                 baseUri = PlayaContentProvider.EVENT_URI;
-                ordering = EventTable.COLUMN_NAME + " ASC";
+                ordering = EventTable.COLUMN_START_TIME + " ASC";
             }
 			
             // Now create and return a CursorLoader that will take care of

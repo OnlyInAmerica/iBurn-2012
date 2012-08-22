@@ -50,7 +50,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 /**
@@ -71,6 +73,7 @@ public class ArtFragment extends FragmentActivity {
             CursorLoaderListFragment list = new CursorLoaderListFragment();
             fm.beginTransaction().add(android.R.id.content, list).commit();
         }
+        
     }
 
 
@@ -79,23 +82,11 @@ public class ArtFragment extends FragmentActivity {
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
         
-        // TextView to display when no ListView items are present
-        private TextView emptyText;
-
-        // If non-null, this is the current filter the user has provided.
-        //String mCurFilter;
-        
         @Override
         public void restartLoader(){
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
     	 }
         
-        @Override
-        public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        	View v = inflater.inflate(R.layout.listview, null);
-        	emptyText = (TextView) v.findViewById(android.R.id.empty);
-        	return v;
-        }
 
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -107,10 +98,12 @@ public class ArtFragment extends FragmentActivity {
             setHasOptionsMenu(true);
 
             // Create an empty adapter we will use to display the loaded data.
+            
             mAdapter = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1, null,
                     new String[] { ArtTable.COLUMN_NAME },
                     new int[] { android.R.id.text1}, 0);
+            
             setListAdapter(mAdapter);
 
             // Start out with a progress indicator.
@@ -119,12 +112,6 @@ public class ArtFragment extends FragmentActivity {
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
             getLoaderManager().initLoader(0, null, this);
-        }
-
-
-        @Override public void onListItemClick(ListView l, View v, int position, long id) {
-            // Insert desired behavior here.
-            Log.i("FragmentComplexList", "Item clicked: " + id);
         }
 
         // These are the Camp rows that we will retrieve.
@@ -190,6 +177,11 @@ public class ArtFragment extends FragmentActivity {
             // above is about to be closed.  We need to make sure we are no
             // longer using it.
             mAdapter.swapCursor(null);
+        }
+        
+        @Override public void onListItemClick(ListView l, View v, int position, long id) {
+            View popup = this.getPopupView();
+            //popup.findViewById(R.id.popup_title)
         }
     }
    

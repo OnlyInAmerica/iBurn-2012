@@ -81,22 +81,12 @@ public class CampFragment extends FragmentActivity {
         SimpleCursorAdapter mAdapter;
         
         // TextView to display when no ListView items are present
-        private TextView emptyText;
         
-        private ListView listView;
 
         @Override
         public void restartLoader(){
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
     	 }
-        
-        @Override
-        public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        	View v = inflater.inflate(R.layout.listview, null);
-        	emptyText = (TextView) v.findViewById(android.R.id.empty);
-        	listView = (ListView) v.findViewById(android.R.id.list);
-        	return v;
-        }
 
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -108,10 +98,13 @@ public class CampFragment extends FragmentActivity {
             setHasOptionsMenu(true);
 
             // Create an empty adapter we will use to display the loaded data.
+            /*
             mAdapter = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1, null,
                     new String[] { CampTable.COLUMN_NAME },
                     new int[] { android.R.id.text1}, 0);
+            */
+            mAdapter = new CampCursorAdapter(getActivity(), null);
             setListAdapter(mAdapter);
 
             // Start out with a progress indicator.
@@ -122,15 +115,11 @@ public class CampFragment extends FragmentActivity {
             getLoaderManager().initLoader(0, null, this);
         }
 
-        @Override public void onListItemClick(ListView l, View v, int position, long id) {
-            // Insert desired behavior here.
-            Log.i("FragmentComplexList", "Item clicked: " + id);
-        }
-
         // These are the Camp rows that we will retrieve.
         static final String[] CAMP_PROJECTION = new String[] {
             CampTable.COLUMN_ID,
             CampTable.COLUMN_NAME,
+            CampTable.COLUMN_LOCATION,
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {

@@ -1,3 +1,7 @@
 <resources>
     <item name="menu_show_all" type="id"/>
+    
+    <!--  ListView -->
+    <item name="list_item_cache" type="id"/>
+    <item name="list_item_related_model" type="id"/>
 </resources>

@@ -5,23 +5,33 @@ import com.trailbehind.android.iburn_2012.CampFragment.CursorLoaderListFragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager.LayoutParams;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 /**
  * This class handles actionbar / menuItem (pre SDK 11) creation and click listening
@@ -32,6 +42,23 @@ import android.widget.EditText;
 public abstract class PlayaListFragmentBase extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 	// Search by name string
 	String mCurFilter;
+
+	LinearLayout listContainer;
+	
+	protected TextView emptyText;
+    
+    protected ListView listView;
+    
+    protected View popupView;
+    
+	@Override
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    	View v = inflater.inflate(R.layout.listview, null);
+    	listContainer = (LinearLayout) v.findViewById(R.id.list_container);
+    	emptyText = (TextView) v.findViewById(android.R.id.empty);
+    	listView = (ListView) v.findViewById(android.R.id.list);
+    	return v;
+    }
 	
 	 @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
          // Place an action bar item for searching.
@@ -144,5 +171,17 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 	 public void restartLoader(){
 		 
 	 }
+
+	
+	 // Get popUpWindow instance
+	protected View getPopupView(){
+		if(popupView == null){
+			LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
+			 popupView = layoutInflater.inflate(R.layout.popup, null); 
+		}
+
+		return popupView;
+
+	}
 
 }
