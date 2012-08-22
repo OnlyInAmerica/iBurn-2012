@@ -164,23 +164,28 @@ public class PlayaContentProvider extends ContentProvider {
 			int uriType = sURIMatcher.match(uri);
 			SQLiteDatabase sqlDB = database.getWritableDatabase();
 			long id = 0;
+			Uri result = null;
 			switch (uriType) {
 			case CAMPS:
 				id = sqlDB.insert(CampTable.TABLE_NAME, null, values);
 				getContext().getContentResolver().notifyChange(uri, null);
-				return Uri.parse(CAMP_BASE_PATH + "/" + id);
+				result = Uri.parse(CAMP_BASE_PATH + "/" + id);
+				break;
 			case EVENTS:
 				id = sqlDB.insert(EventTable.TABLE_NAME, null, values);
-				id = sqlDB.insert(CampTable.TABLE_NAME, null, values);
 				getContext().getContentResolver().notifyChange(uri, null);
-				return Uri.parse(EVENT_BASE_PATH + "/" + id);
+				result = Uri.parse(EVENT_BASE_PATH + "/" + id);
+				break;
 			case ART:
 				id = sqlDB.insert(ArtTable.TABLE_NAME, null, values);
 				getContext().getContentResolver().notifyChange(uri, null);
-				return Uri.parse(ART_BASE_PATH + "/" + id);
+				result = Uri.parse(ART_BASE_PATH + "/" + id);
+				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 			}
+			
+			return result;
 			
 		}
 

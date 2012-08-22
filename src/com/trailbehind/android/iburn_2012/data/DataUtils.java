@@ -52,7 +52,11 @@ public class DataUtils {
 				// Insert JSON into database
 				//content://com.trailbehind.android.iburn.playacontentprovider/camp
 				FragmentTabsPager.app.contentValuesToTable(result, PlayaContentProvider.CAMP_URI);
-				
+				/*
+				Gson gson;
+				InputStream is;
+				ArrayList<ContentValues> result;
+				*/
 				// EVENTS
 				gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.EventsDeserializer()).create();
 				is = assets.open(EVENT_DATA_PATH);

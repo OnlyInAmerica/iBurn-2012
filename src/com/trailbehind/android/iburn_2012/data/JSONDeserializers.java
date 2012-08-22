@@ -109,19 +109,27 @@ public class JSONDeserializers {
 						cv.put(EventTable.COLUMN_DESCRIPTION, object.get(EventJSON.KEY_DESCRIPTION).getAsString());
 					
 					if(object.has(EventJSON.KEY_ALL_DAY))
-						if(!object.get(EventJSON.KEY_ALL_DAY).isJsonNull())
-						cv.put(EventTable.COLUMN_ALL_DAY, object.get(EventJSON.KEY_ALL_DAY).getAsInt()); 
+						if(!object.get(EventJSON.KEY_ALL_DAY).isJsonNull()){
+							if(object.get(EventJSON.KEY_ALL_DAY).getAsString().trim().toLowerCase().compareTo("false")==0)
+								cv.put(EventTable.COLUMN_ALL_DAY, 0); 
+							else if(object.get(EventJSON.KEY_ALL_DAY).getAsString().trim().toLowerCase().compareTo("true")==0)
+								cv.put(EventTable.COLUMN_ALL_DAY, 1); 
+						}
 					
 					if(object.has(EventJSON.KEY_CHECK_LOCATION))
-						if(!object.get(EventJSON.KEY_CHECK_LOCATION).isJsonNull())
-							cv.put(EventTable.COLUMN_CHECK_LOCATION, object.get(EventJSON.KEY_CHECK_LOCATION).getAsString()); 
-					
+						if(!object.get(EventJSON.KEY_CHECK_LOCATION).isJsonNull()){
+							if(object.get(EventJSON.KEY_CHECK_LOCATION).getAsString().trim().toLowerCase().compareTo("false")==0)
+								cv.put(EventTable.COLUMN_CHECK_LOCATION, 0); 
+							else if(object.get(EventJSON.KEY_CHECK_LOCATION).getAsString().trim().toLowerCase().compareTo("true")==0)
+								cv.put(EventTable.COLUMN_CHECK_LOCATION, 1); 
+						} 
+	
 					if(object.has(EventJSON.KEY_HOST_CAMP)){
 						if(!object.get(EventJSON.KEY_HOST_CAMP).isJsonNull()){
 							JsonObject camp = object.get(EventJSON.KEY_HOST_CAMP).getAsJsonObject();
 							if(camp.has(EventJSON.KEY_HOST_CAMP_NAME))
 								if(!camp.get(EventJSON.KEY_HOST_CAMP_NAME).isJsonNull())
-									cv.put(EventTable.COLUMN_HOST_CAMP_NAME, camp.get(EventJSON.KEY_HOST_CAMP).getAsString());
+									cv.put(EventTable.COLUMN_HOST_CAMP_NAME, camp.get(EventJSON.KEY_HOST_CAMP_NAME).getAsString());
 									
 							if(camp.has(EventJSON.KEY_HOST_CAMP_ID))
 								if(!camp.get(EventJSON.KEY_HOST_CAMP_ID).isJsonNull())
@@ -160,9 +168,9 @@ public class JSONDeserializers {
 									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull())
 										cv.put(EventTable.COLUMN_START_TIME, occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
 								
-								if(occurence.has(EventJSON.KEY_OCCURENCE_START_TIME))
-									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull())
-										cv.put(EventTable.COLUMN_START_TIME, occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
+								if(occurence.has(EventJSON.KEY_OCCURENCE_END_TIME))
+									if(!occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).isJsonNull())
+										cv.put(EventTable.COLUMN_END_TIME, occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).getAsString());
 								
 								// Java passes method arguments by-value
 								// So we can send multiple entries which
@@ -208,7 +216,7 @@ public class JSONDeserializers {
 					
 					if(object.has(ArtJSON.KEY_ARTIST))
 						if(!object.get(ArtJSON.KEY_ARTIST).isJsonNull())
-						cv.put(ArtTable.COLUMN_ARTIST, object.get(ArtJSON.KEY_ARTIST).getAsInt());
+						cv.put(ArtTable.COLUMN_ARTIST, object.get(ArtJSON.KEY_ARTIST).getAsString());
 					
 					if(object.has(ArtJSON.KEY_ART_ID))
 						if(!object.get(ArtJSON.KEY_ART_ID).isJsonNull())

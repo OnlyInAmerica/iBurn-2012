@@ -149,7 +149,7 @@ public class ArtFragment extends FragmentActivity {
         }
 
         // These are the Camp rows that we will retrieve.
-        static final String[] CAMP_PROJECTION = new String[] {
+        static final String[] ART_PROJECTION = new String[] {
             ArtTable.COLUMN_ID,
             ArtTable.COLUMN_NAME,
         };
@@ -179,7 +179,7 @@ public class ArtFragment extends FragmentActivity {
                     CAMP_PROJECTION, select, null, CampTable.COLUMN_NAME + " ASC");
             */
             return new CursorLoader(getActivity(), baseUri,
-                    CAMP_PROJECTION, null, null,
+                    ART_PROJECTION, null, null,
                     ordering);
         }
 
@@ -191,10 +191,10 @@ public class ArtFragment extends FragmentActivity {
             // If searching, show no camps match query
             if (data.getCount() == 0 && mCurFilter != "" && mCurFilter != null){
             	emptyText.setVisibility(View.VISIBLE);
-            	emptyText.setText("These aren't the camps you're looking for...");
+            	emptyText.setText("These aren't the arts you're looking for...");
             }
             else if(data.getCount() == 0)
-            	emptyText.setText("No Camps Found");
+            	emptyText.setText("No Art Found");
             else
             	emptyText.setVisibility(View.GONE);
             // The list should now be shown.

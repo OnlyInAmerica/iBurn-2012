@@ -12675,7 +12675,10 @@
         "description": "Kostume Kult is back presenting \u201cThe Island of Dr. More-Oh!\u201d, with a twisted take on fertility, cross-breeding and animal experimentation. In Nyrvana Village, KK offers free costumery, personal transformations & runway shows every afternoon Tues-Fri along with day & evening dancing at the Garden of Heathen\u2019s Rainbow Lounge. Come by to channel your inner beast or to recycle your old costumery in our Kostume Dome.", 
         "hometown": "NYC", 
         "name": "Kostume Kult", 
-        "url": "www.KostumeKult.com"
+        "url": "www.KostumeKult.com",
+        "latitude": "40.781440", 
+        "location": "Esplanade & 2:45", 
+        "longitude": "-119.198933"
     }, 
     {
         "contact_email": "landofnodexperiment@gmail.com", 

@@ -17,7 +17,7 @@ public class EventJSON {
 	public static final String KEY_URL = "url";
 	public static final String KEY_YEAR = "year";
 	
-	public static final String KEY_OCCURENCE_SET = "occurence_set";
+	public static final String KEY_OCCURENCE_SET = "occurrence_set";
 	public static final String KEY_OCCURENCE_START_TIME = "start_time";
 	public static final String KEY_OCCURENCE_END_TIME = "end_time";
 	

@@ -31,6 +31,6 @@ public class EventTable {
 	        +  COLUMN_YEAR + " integer, " + COLUMN_HOST_CAMP_ID +" integer, " 
 	        +  COLUMN_HOST_CAMP_NAME + " text, " + COLUMN_START_TIME + " text, "
 	        +  COLUMN_END_TIME + " text, " + COLUMN_LATITUDE +" real," 
-	        +  COLUMN_LONGITUDE + " real, " + COLUMN_LOCATION + " text;";
+	        +  COLUMN_LONGITUDE + " real, " + COLUMN_LOCATION + " text);";
 
 }

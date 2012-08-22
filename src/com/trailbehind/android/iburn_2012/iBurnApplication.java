@@ -8,12 +8,13 @@ import android.net.Uri;
 
 public class iBurnApplication extends Application {
 	
-	public boolean contentValuesToTable(ArrayList<ContentValues> cv, Uri uri){
+	public Uri contentValuesToTable(ArrayList<ContentValues> cv, Uri uri){
 		int size = cv.size();	
+		Uri result = null;
 		for(int x = 0; x<size;x++){
-			getContentResolver().insert(uri, cv.get(x));
+			result = getContentResolver().insert(uri, cv.get(x));
 		}
-			return true;
+			return result;
 	}
 
 }
