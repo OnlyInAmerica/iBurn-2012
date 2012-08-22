@@ -96,10 +96,13 @@ public class EventFragment extends FragmentActivity {
             setHasOptionsMenu(true);
 
             // Create an empty adapter we will use to display the loaded data.
+            /*
             mAdapter = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1, null,
                     new String[] { ArtTable.COLUMN_NAME },
                     new int[] { android.R.id.text1}, 0);
+            */
+            mAdapter = new EventCursorAdapter(getActivity(), null);
             setListAdapter(mAdapter);
 
             // Start out with a progress indicator.
@@ -115,6 +118,7 @@ public class EventFragment extends FragmentActivity {
             EventTable.COLUMN_ID,
             EventTable.COLUMN_NAME,
             EventTable.COLUMN_START_TIME,
+            EventTable.COLUMN_ALL_DAY,
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {

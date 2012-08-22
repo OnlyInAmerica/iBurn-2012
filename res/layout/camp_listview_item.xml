@@ -7,7 +7,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_container"
     android:layout_width="fill_parent"
-    android:layout_height="70dp" >
+    android:layout_height="wrap_content" >
 
      <TextView
 	    android:id="@+id/list_item_title"
@@ -24,10 +24,10 @@
 	</TextView>
 	    
 	<TextView
-	    android:id="@+id/list_item_distance"
+	    android:id="@+id/list_item_sub"
 	    android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:layout_toLeftOf="@+id/list_item_headline"
+        android:layout_below="@id/list_item_title"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:singleLine="true"

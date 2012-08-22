@@ -25,11 +25,11 @@ public class CampCursorAdapter extends SimpleCursorAdapter {
         if (view_cache == null) {
         	view_cache = new ViewCache();
         	view_cache.title = (TextView) view.findViewById(R.id.list_item_title);
-        	view_cache.distance = (TextView) view.findViewById(R.id.list_item_distance);
+        	view_cache.sub = (TextView) view.findViewById(R.id.list_item_sub);
         	//view_cache.thumbnail = (ImageView) view.findViewById(R.id.list_item_image);
             
         	view_cache.title_col = cursor.getColumnIndexOrThrow(CampTable.COLUMN_NAME);
-        	view_cache.distance_col = cursor.getColumnIndexOrThrow(CampTable.COLUMN_LOCATION);
+        	view_cache.sub_col = cursor.getColumnIndexOrThrow(CampTable.COLUMN_LOCATION);
         	//view_cache.thumbnail_col = cursor.getColumnIndexOrThrow(SQLiteWrapper.COLUMN_THUMBNAIL_PATH);
         	view_cache._id_col = cursor.getColumnIndexOrThrow(CampTable.COLUMN_ID);
             view.setTag(R.id.list_item_cache, view_cache);
@@ -38,7 +38,7 @@ public class CampCursorAdapter extends SimpleCursorAdapter {
         }
         //Log.d("bindView","yeah");
         view_cache.title.setText(cursor.getString(view_cache.title_col));
-        view_cache.distance.setText(cursor.getString(view_cache.distance_col));
+        view_cache.sub.setText(cursor.getString(view_cache.sub_col));
         //view_cache.thumbnail.setImageBitmap(BitmapFactory.decodeFile(cursor.getString(view_cache.thumbnail_col)));
         view.setTag(R.id.list_item_related_model, cursor.getInt(view_cache._id_col));
     }
@@ -47,10 +47,10 @@ public class CampCursorAdapter extends SimpleCursorAdapter {
     static class ViewCache {
         TextView title;
         //TextView body;
-        TextView distance;
+        TextView sub;
         
         int title_col; 
-        int distance_col;
+        int sub_col;
         int _id_col;
     }
 }
