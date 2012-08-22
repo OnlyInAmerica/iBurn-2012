@@ -87,9 +87,7 @@ public class ArtFragment extends FragmentActivity {
         
         @Override
         public void restartLoader(){
-        	Log.d("ArtFragment","Restart Loader");
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-        	//getLoaderManager().restartLoader(0, null, (LoaderCallbacks) PlayaListFragmentBase.this);
     	 }
         
         @Override

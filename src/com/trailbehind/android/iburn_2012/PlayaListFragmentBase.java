@@ -23,6 +23,12 @@ import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.EditText;
 
+/**
+ * This class handles actionbar / menuItem (pre SDK 11) creation and click listening
+ * for generic name searching
+ * @author davidbrodsky
+ *
+ */
 public abstract class PlayaListFragmentBase extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 	// Search by name string
 	String mCurFilter;
@@ -103,10 +109,16 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
      
 	 @Override
      public void onPrepareOptionsMenu(Menu menu) {
+		 /*
+		 if(mCurFilter == null)
+			 Log.d("onPrepareOptionsMenu"," " + mCurFilter);
+		 else
+			 Log.d("onPrepareOptionsMenu"," null");
+		 */
      	// If a search filter is applied, allow clearing 
      	// search filter for pre-honeycomb devices
      	
-     	if((mCurFilter != "" || mCurFilter != null) && menu.findItem(R.id.menu_show_all) == null){
+     	if((mCurFilter != "" && mCurFilter != null) && menu.findItem(R.id.menu_show_all) == null){
      		MenuItem item = menu.add(Menu.NONE, R.id.menu_show_all, Menu.NONE, "Show All");
              item.setIcon(android.R.drawable.ic_menu_more);
              item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
@@ -122,7 +134,7 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
              });
      	}
      	// If no search filter applied, remove show_all menu
-     	else if((mCurFilter == "" || mCurFilter == null) && menu.findItem(R.id.menu_show_all) != null){
+     	else if(!(mCurFilter != "" && mCurFilter != null) && menu.findItem(R.id.menu_show_all) != null){
      		menu.removeItem(R.id.menu_show_all);
      	}
      

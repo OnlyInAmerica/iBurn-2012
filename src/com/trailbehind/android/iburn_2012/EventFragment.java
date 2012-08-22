@@ -16,6 +16,7 @@
 
 package com.trailbehind.android.iburn_2012;
 
+import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.ArtTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 import com.trailbehind.android.iburn_2012.data.EventTable;
@@ -68,8 +69,7 @@ public class EventFragment extends FragmentActivity {
     }
 
 
-    public static class CursorLoaderListFragment extends ListFragment
-            implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static class CursorLoaderListFragment extends PlayaListFragmentBase implements LoaderManager.LoaderCallbacks<Cursor>{
 
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
@@ -77,8 +77,10 @@ public class EventFragment extends FragmentActivity {
         // TextView to display when no ListView items are present
         private TextView emptyText;
 
-        // If non-null, this is the current filter the user has provided.
-        String mCurFilter;
+        @Override
+        public void restartLoader(){
+        	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+    	 }
         
         @Override
         public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -109,39 +111,6 @@ public class EventFragment extends FragmentActivity {
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
             getLoaderManager().initLoader(0, null, this);
-        }
-
-        @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            // Place an action bar item for searching.
-            MenuItem item = menu.add("Search");
-            item.setIcon(android.R.drawable.ic_menu_search);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
-                    | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-            View searchView = SearchViewCompat.newSearchView(getActivity());
-            if (searchView != null) {
-                SearchViewCompat.setOnQueryTextListener(searchView,
-                        new OnQueryTextListenerCompat() {
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        // Called when the action bar search text has changed.  Update
-                        // the search filter, and restart the loader to do a new query
-                        // with this filter.
-                        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-                        // Don't do anything if the filter hasn't actually changed.
-                        // Prevents restarting the loader when restoring state.
-                        if (mCurFilter == null && newFilter == null) {
-                            return true;
-                        }
-                        if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-                            return true;
-                        }
-                        mCurFilter = newFilter;
-                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-                        return true;
-                    }
-                });
-                MenuItemCompat.setActionView(item, searchView);
-            }
         }
 
         @Override public void onListItemClick(ListView l, View v, int position, long id) {

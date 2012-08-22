@@ -16,6 +16,7 @@
 
 package com.trailbehind.android.iburn_2012;
 
+import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.CampTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
@@ -74,8 +75,7 @@ public class CampFragment extends FragmentActivity {
     }
 
 
-    public static class CursorLoaderListFragment extends ListFragment
-            implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static class CursorLoaderListFragment extends PlayaListFragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
 
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
@@ -84,10 +84,11 @@ public class CampFragment extends FragmentActivity {
         private TextView emptyText;
         
         private ListView listView;
-        
 
-        // If non-null, this is the current filter the user has provided.
-        String mCurFilter;
+        @Override
+        public void restartLoader(){
+        	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+    	 }
         
         @Override
         public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -119,98 +120,6 @@ public class CampFragment extends FragmentActivity {
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
             getLoaderManager().initLoader(0, null, this);
-        }
-
-        @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            // Place an action bar item for searching.
-            MenuItem item = menu.add("Search");
-            item.setIcon(android.R.drawable.ic_menu_search);
-            
-            // Pre-Honeycomb, actionviews do not show!
-            if(Build.VERSION.SDK_INT > 11){
-            	MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
-                        | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-	            View searchView = SearchViewCompat.newSearchView(getActivity());
-	            if (searchView != null) {
-	                SearchViewCompat.setOnQueryTextListener(searchView,
-	                        new OnQueryTextListenerCompat() {
-	                    @Override
-	                    public boolean onQueryTextChange(String newText) {
-	                        // Called when the action bar search text has changed.  Update
-	                        // the search filter, and restart the loader to do a new query
-	                        // with this filter.
-	                        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-	                        // Don't do anything if the filter hasn't actually changed.
-	                        // Prevents restarting the loader when restoring state.
-	                        if (mCurFilter == null && newFilter == null) {
-	                            return true;
-	                        }
-	                        if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-	                            return true;
-	                        }
-	                        mCurFilter = newFilter;
-	                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-	                        return true;
-	                    }
-	                });
-	                MenuItemCompat.setActionView(item, searchView);
-	            }
-            }
-            // PRE-HONEYCOMB Behavior
-            else{
-            	item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-
-						alert.setTitle("Search");
-
-						// Set an EditText view to get user input 
-						final EditText input = new EditText(getActivity());
-						alert.setView(input);
-						alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								String value = input.getText().toString();
-							  	mCurFilter = value;
-		                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-							  }
-							});
-
-							alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-							  public void onClick(DialogInterface dialog, int whichButton) {
-							    // Canceled.
-							  }
-							});
-							
-							alert.show();
-						
-						return true;
-					}
-            		
-            	});
-            }
-        } // end OnCreateOptionsMenu
-        
-        @Override
-        public void onPrepareOptionsMenu(Menu menu) {
-        	// If a search filter is applied, allow clearing 
-        	// search filter for pre-honeycomb devices
-        	if(mCurFilter != "" || mCurFilter != null){
-        		MenuItem item = menu.add("Show All");
-                item.setIcon(android.R.drawable.ic_menu_more);
-                item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						mCurFilter = null;
-						getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-						return false;
-					}
-                	
-                });
-        	}
-        
         }
 
         @Override public void onListItemClick(ListView l, View v, int position, long id) {

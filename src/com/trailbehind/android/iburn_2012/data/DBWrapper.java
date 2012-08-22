@@ -11,7 +11,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.AbstractWindowedCursor;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -27,9 +30,14 @@ class DBWrapper extends SQLiteOpenHelper {
 	
 	//DATABASE INFO
     public static final String DATABASE_NAME = "iburn.db";
+    // database path in /assets
+    public static final String DATABASE_PATH = "db/";
+    
     public static final int DATABASE_VERSION = 1;
     
-    private static String DB_DESTINATION_PATH = "/data/data/com.trailbehind.android.iburn_2012/databases/";
+    private static String DATABASE_DESTINATION_PATH = "/data/data/com.trailbehind.android.iburn_2012/databases/";
+    
+    private SQLiteDatabase mDB; 
     
     //TABLE INFO
     // public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
@@ -70,6 +78,32 @@ class DBWrapper extends SQLiteOpenHelper {
 		onCreate(db);
     }
     
+    @Override
+    public synchronized SQLiteDatabase getWritableDatabase() {
+    	boolean dbExist = checkDataBase();
+    	 
+    	if(dbExist){
+    		//do nothing - database already exist
+    	}else{
+ 
+    		//By calling this method and empty database will be created into the default system path
+               //of your application so we are gonna be able to overwrite that database with our database.
+        	this.getReadableDatabase();
+ 
+        	try {
+ 
+    			copyDataBase();
+ 
+    		} catch (IOException e) {
+ 
+        		throw new Error("Error copying database");
+ 
+        	}
+    	}
+    	return openDataBase(true);
+    }
+    
+   
     public static ContentValues cursorRowToContentValues(Cursor cursor){
     	ContentValues values = new ContentValues();
     	
@@ -107,10 +141,10 @@ class DBWrapper extends SQLiteOpenHelper {
     private void copyDataBase() throws IOException{
  
     	//Open your local db as the input stream
-    	InputStream myInput = FragmentTabsPager.app.getAssets().open(DBWrapper.DATABASE_NAME);
+    	InputStream myInput = FragmentTabsPager.app.getAssets().open(DATABASE_PATH + DATABASE_NAME);
  
     	// Path to the just created empty db
-    	String outFileName = DB_DESTINATION_PATH + DATABASE_NAME;
+    	String outFileName = DATABASE_DESTINATION_PATH + DATABASE_NAME;
  
     	//Open the empty db as the output stream
     	OutputStream myOutput = new FileOutputStream(outFileName);
@@ -126,6 +160,72 @@ class DBWrapper extends SQLiteOpenHelper {
     	myOutput.flush();
     	myOutput.close();
     	myInput.close();
+ 
+    }
+    
+    /**
+     * Check if the database already exist to avoid re-copying the file each time you open the application.
+     * @return true if it exists, false if it doesn't
+     */
+    private boolean checkDataBase(){
+ 
+    	SQLiteDatabase checkDB = null;
+ 
+    	try{
+    		String myPath = DATABASE_DESTINATION_PATH + DATABASE_NAME;
+    		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+ 
+    	}catch(SQLiteException e){
+ 
+    		//database does't exist yet post SDK 11
+ 
+    	}
+ 
+    	if(checkDB != null){
+ 
+    		checkDB.close();
+ 
+    	}
+ 
+    	return checkDB != null ? true : false;
+    }
+    
+    public SQLiteDatabase openDataBase(boolean write) throws SQLException{
+    	 
+    	//Open the copied database
+        String myPath = DATABASE_DESTINATION_PATH + DATABASE_NAME;
+        if (write)
+        	return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+        else
+        	return SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+ 
+    }
+    
+    /**
+     * Creates a empty database on the system and rewrites it with your own database.
+     * */
+    public void createDataBase() throws IOException{
+ 
+    	boolean dbExist = checkDataBase();
+ 
+    	if(dbExist){
+    		//do nothing - database already exist
+    	}else{
+ 
+    		//By calling this method and empty database will be created into the default system path
+               //of your application so we are gonna be able to overwrite that database with our database.
+        	this.getReadableDatabase();
+ 
+        	try {
+ 
+    			copyDataBase();
+ 
+    		} catch (IOException e) {
+ 
+        		throw new Error("Error copying database");
+ 
+        	}
+    	}
  
     }
 
