@@ -1,5 +1,5 @@
 #bin/
-#.class
+.class
 #gen/
 SECRETS.java
 #lint.xml
