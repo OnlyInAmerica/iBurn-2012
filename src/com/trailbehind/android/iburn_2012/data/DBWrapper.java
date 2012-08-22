@@ -1,5 +1,12 @@
 package com.trailbehind.android.iburn_2012.data;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import com.trailbehind.android.iburn_2012.FragmentTabsPager;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.AbstractWindowedCursor;
@@ -21,6 +28,8 @@ class DBWrapper extends SQLiteOpenHelper {
 	//DATABASE INFO
     public static final String DATABASE_NAME = "iburn.db";
     public static final int DATABASE_VERSION = 1;
+    
+    private static String DB_DESTINATION_PATH = "/data/data/com.trailbehind.android.iburn_2012/databases/";
     
     //TABLE INFO
     // public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
@@ -88,6 +97,36 @@ class DBWrapper extends SQLiteOpenHelper {
         }
         
     	return values;
+    }
+    
+    /**
+     * Copies your database from your local assets-folder to the just created empty database in the
+     * system folder, from where it can be accessed and handled.
+     * This is done by transfering bytestream.
+     */
+    private void copyDataBase() throws IOException{
+ 
+    	//Open your local db as the input stream
+    	InputStream myInput = FragmentTabsPager.app.getAssets().open(DBWrapper.DATABASE_NAME);
+ 
+    	// Path to the just created empty db
+    	String outFileName = DB_DESTINATION_PATH + DATABASE_NAME;
+ 
+    	//Open the empty db as the output stream
+    	OutputStream myOutput = new FileOutputStream(outFileName);
+ 
+    	//transfer bytes from the inputfile to the outputfile
+    	byte[] buffer = new byte[1024];
+    	int length;
+    	while ((length = myInput.read(buffer))>0){
+    		myOutput.write(buffer, 0, length);
+    	}
+ 
+    	//Close the streams
+    	myOutput.flush();
+    	myOutput.close();
+    	myInput.close();
+ 
     }
 
 }

@@ -16,6 +16,7 @@
 
 package com.trailbehind.android.iburn_2012;
 
+import com.trailbehind.android.iburn_2012.CampFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.ArtTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
@@ -30,8 +31,12 @@ import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
+import android.app.AlertDialog;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.Contacts.People;
@@ -43,6 +48,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.MenuItem.OnMenuItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -67,8 +74,7 @@ public class ArtFragment extends FragmentActivity {
     }
 
 
-    public static class CursorLoaderListFragment extends ListFragment
-            implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static class CursorLoaderListFragment extends PlayaListFragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
 
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
@@ -77,7 +83,14 @@ public class ArtFragment extends FragmentActivity {
         private TextView emptyText;
 
         // If non-null, this is the current filter the user has provided.
-        String mCurFilter;
+        //String mCurFilter;
+        
+        @Override
+        public void restartLoader(){
+        	Log.d("ArtFragment","Restart Loader");
+        	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+        	//getLoaderManager().restartLoader(0, null, (LoaderCallbacks) PlayaListFragmentBase.this);
+    	 }
         
         @Override
         public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -110,38 +123,6 @@ public class ArtFragment extends FragmentActivity {
             getLoaderManager().initLoader(0, null, this);
         }
 
-        @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            // Place an action bar item for searching.
-            MenuItem item = menu.add("Search");
-            item.setIcon(android.R.drawable.ic_menu_search);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
-                    | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-            View searchView = SearchViewCompat.newSearchView(getActivity());
-            if (searchView != null) {
-                SearchViewCompat.setOnQueryTextListener(searchView,
-                        new OnQueryTextListenerCompat() {
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        // Called when the action bar search text has changed.  Update
-                        // the search filter, and restart the loader to do a new query
-                        // with this filter.
-                        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-                        // Don't do anything if the filter hasn't actually changed.
-                        // Prevents restarting the loader when restoring state.
-                        if (mCurFilter == null && newFilter == null) {
-                            return true;
-                        }
-                        if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-                            return true;
-                        }
-                        mCurFilter = newFilter;
-                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-                        return true;
-                    }
-                });
-                MenuItemCompat.setActionView(item, searchView);
-            }
-        }
 
         @Override public void onListItemClick(ListView l, View v, int position, long id) {
             // Insert desired behavior here.
@@ -213,5 +194,6 @@ public class ArtFragment extends FragmentActivity {
             mAdapter.swapCursor(null);
         }
     }
+   
 
 }

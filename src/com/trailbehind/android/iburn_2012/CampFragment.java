@@ -30,8 +30,12 @@ import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.Contacts.People;
@@ -41,8 +45,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -52,11 +58,12 @@ import android.widget.TextView;
  */
 @SuppressWarnings("all")
 public class CampFragment extends FragmentActivity {
+	private static Context c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        c = this.getBaseContext();
         FragmentManager fm = getSupportFragmentManager();
 
         // Create the list fragment and add it as our sole content.
@@ -75,6 +82,9 @@ public class CampFragment extends FragmentActivity {
         
         // TextView to display when no ListView items are present
         private TextView emptyText;
+        
+        private ListView listView;
+        
 
         // If non-null, this is the current filter the user has provided.
         String mCurFilter;
@@ -83,6 +93,7 @@ public class CampFragment extends FragmentActivity {
         public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         	View v = inflater.inflate(R.layout.listview, null);
         	emptyText = (TextView) v.findViewById(android.R.id.empty);
+        	listView = (ListView) v.findViewById(android.R.id.list);
         	return v;
         }
 
@@ -114,33 +125,92 @@ public class CampFragment extends FragmentActivity {
             // Place an action bar item for searching.
             MenuItem item = menu.add("Search");
             item.setIcon(android.R.drawable.ic_menu_search);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
-                    | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-            View searchView = SearchViewCompat.newSearchView(getActivity());
-            if (searchView != null) {
-                SearchViewCompat.setOnQueryTextListener(searchView,
-                        new OnQueryTextListenerCompat() {
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        // Called when the action bar search text has changed.  Update
-                        // the search filter, and restart the loader to do a new query
-                        // with this filter.
-                        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
-                        // Don't do anything if the filter hasn't actually changed.
-                        // Prevents restarting the loader when restoring state.
-                        if (mCurFilter == null && newFilter == null) {
-                            return true;
-                        }
-                        if (mCurFilter != null && mCurFilter.equals(newFilter)) {
-                            return true;
-                        }
-                        mCurFilter = newFilter;
-                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
-                        return true;
-                    }
-                });
-                MenuItemCompat.setActionView(item, searchView);
+            
+            // Pre-Honeycomb, actionviews do not show!
+            if(Build.VERSION.SDK_INT > 11){
+            	MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
+                        | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+	            View searchView = SearchViewCompat.newSearchView(getActivity());
+	            if (searchView != null) {
+	                SearchViewCompat.setOnQueryTextListener(searchView,
+	                        new OnQueryTextListenerCompat() {
+	                    @Override
+	                    public boolean onQueryTextChange(String newText) {
+	                        // Called when the action bar search text has changed.  Update
+	                        // the search filter, and restart the loader to do a new query
+	                        // with this filter.
+	                        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+	                        // Don't do anything if the filter hasn't actually changed.
+	                        // Prevents restarting the loader when restoring state.
+	                        if (mCurFilter == null && newFilter == null) {
+	                            return true;
+	                        }
+	                        if (mCurFilter != null && mCurFilter.equals(newFilter)) {
+	                            return true;
+	                        }
+	                        mCurFilter = newFilter;
+	                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+	                        return true;
+	                    }
+	                });
+	                MenuItemCompat.setActionView(item, searchView);
+	            }
             }
+            // PRE-HONEYCOMB Behavior
+            else{
+            	item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+						alert.setTitle("Search");
+
+						// Set an EditText view to get user input 
+						final EditText input = new EditText(getActivity());
+						alert.setView(input);
+						alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								String value = input.getText().toString();
+							  	mCurFilter = value;
+		                        getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+							  }
+							});
+
+							alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							  public void onClick(DialogInterface dialog, int whichButton) {
+							    // Canceled.
+							  }
+							});
+							
+							alert.show();
+						
+						return true;
+					}
+            		
+            	});
+            }
+        } // end OnCreateOptionsMenu
+        
+        @Override
+        public void onPrepareOptionsMenu(Menu menu) {
+        	// If a search filter is applied, allow clearing 
+        	// search filter for pre-honeycomb devices
+        	if(mCurFilter != "" || mCurFilter != null){
+        		MenuItem item = menu.add("Show All");
+                item.setIcon(android.R.drawable.ic_menu_more);
+                item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						mCurFilter = null;
+						getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
+						return false;
+					}
+                	
+                });
+        	}
+        
         }
 
         @Override public void onListItemClick(ListView l, View v, int position, long id) {
