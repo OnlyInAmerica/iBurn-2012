@@ -25,8 +25,10 @@ public class PlayaContentProvider extends ContentProvider {
 		private static final int CAMP_SEARCH = 3; 	// Search title by string
 		private static final int EVENTS = 4;
 		private static final int EVENT_ID = 5;
+		private static final int EVENT_SEARCH = 9;
 		private static final int ART = 7;
 		private static final int ART_ID = 8;
+		private static final int ART_SEARCH = 10;
 
 		private static final String AUTHORITY = "com.trailbehind.android.iburn_2012.data.playacontentprovider";
 
@@ -38,23 +40,39 @@ public class PlayaContentProvider extends ContentProvider {
 		
 		public static final Uri CAMP_URI = AUTHORITY_URI.buildUpon().appendPath(CAMP_BASE_PATH).build();
 		public static final Uri CAMP_SEARCH_URI = AUTHORITY_URI.buildUpon().appendPath(CAMP_BASE_PATH).appendPath("search").build();
+		
 		public static final Uri EVENT_URI = AUTHORITY_URI.buildUpon().appendPath(EVENT_BASE_PATH).build();
+		public static final Uri EVENT_SEARCH_URI = AUTHORITY_URI.buildUpon().appendPath(EVENT_BASE_PATH).appendPath("search").build();
+		
 		public static final Uri ART_URI = AUTHORITY_URI.buildUpon().appendPath(ART_BASE_PATH).build();
+		public static final Uri ART_SEARCH_URI = AUTHORITY_URI.buildUpon().appendPath(ART_BASE_PATH).appendPath("search").build();
 
 		public static final String CAMP_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
 				+ "/camps";
 		public static final String CAMP_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
 				+ "/camp";
+		public static final String EVENT_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+				+ "/events";
+		public static final String EVENT_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+				+ "/event";
+		public static final String ART_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+				+ "/arts";
+		public static final String ART_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+				+ "/art";
 
 		private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		static {
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH, CAMPS);
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH + "/#", CAMP_ID);
 			sURIMatcher.addURI(AUTHORITY, CAMP_BASE_PATH + "/search/*", CAMP_SEARCH);
+			
 			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH, EVENTS);
 			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH + "/#", EVENT_ID);
+			sURIMatcher.addURI(AUTHORITY, EVENT_BASE_PATH + "/search/*", EVENT_SEARCH);
+			
 			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH, ART);
 			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH + "/#", ART_ID);
+			sURIMatcher.addURI(AUTHORITY, ART_BASE_PATH + "/search/*", ART_SEARCH);
 		}
 
 		@Override
@@ -71,23 +89,57 @@ public class PlayaContentProvider extends ContentProvider {
 			// Uisng SQLiteQueryBuilder instead of query() method
 			SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
-			// Check if the caller has requested a column which does not exists
-			checkColumns(projection);
-
-			// Set the table
-			queryBuilder.setTables(DBWrapper.TABLE_NAME);
-
 			int uriType = sURIMatcher.match(uri);
 			switch (uriType) {
 			case CAMPS:
+				queryBuilder.setTables(CampTable.TABLE_NAME);
+				checkColumns(projection, CAMPS);
 				break;
 			case CAMP_ID:
+				queryBuilder.setTables(CampTable.TABLE_NAME);
+				checkColumns(projection, CAMPS);
 				// Adding the ID to the original query
 				queryBuilder.appendWhere(CampTable.COLUMN_ID + "="
 						+ uri.getLastPathSegment());
 				break;
 			case CAMP_SEARCH:
+				queryBuilder.setTables(CampTable.TABLE_NAME);
+				checkColumns(projection, CAMPS);
 				queryBuilder.appendWhere(CampTable.COLUMN_NAME + " LIKE "
+						+ "\"%" + uri.getLastPathSegment()+"%\"");
+				break;
+			case EVENTS:
+				queryBuilder.setTables(EventTable.TABLE_NAME);
+				checkColumns(projection, EVENTS);
+				break;
+			case EVENT_ID:
+				queryBuilder.setTables(EventTable.TABLE_NAME);
+				checkColumns(projection, EVENTS);
+				// Adding the ID to the original query
+				queryBuilder.appendWhere(EventTable.COLUMN_ID + "="
+						+ uri.getLastPathSegment());
+				break;
+			case EVENT_SEARCH:
+				queryBuilder.setTables(EventTable.TABLE_NAME);
+				checkColumns(projection, EVENTS);
+				queryBuilder.appendWhere(EventTable.COLUMN_NAME + " LIKE "
+						+ "\"%" + uri.getLastPathSegment()+"%\"");
+				break;
+			case ART:
+				queryBuilder.setTables(ArtTable.TABLE_NAME);
+				checkColumns(projection, ART);
+				break;
+			case ART_ID:
+				queryBuilder.setTables(ArtTable.TABLE_NAME);
+				checkColumns(projection, ART);
+				// Adding the ID to the original query
+				queryBuilder.appendWhere(ArtTable.COLUMN_ID + "="
+						+ uri.getLastPathSegment());
+				break;
+			case ART_SEARCH:
+				queryBuilder.setTables(ArtTable.TABLE_NAME);
+				checkColumns(projection, ART);
+				queryBuilder.appendWhere(ArtTable.COLUMN_NAME + " LIKE "
 						+ "\"%" + uri.getLastPathSegment()+"%\"");
 				break;
 			default:
@@ -114,13 +166,22 @@ public class PlayaContentProvider extends ContentProvider {
 			long id = 0;
 			switch (uriType) {
 			case CAMPS:
-				id = sqlDB.insert(DBWrapper.TABLE_NAME, null, values);
-				break;
+				id = sqlDB.insert(CampTable.TABLE_NAME, null, values);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return Uri.parse(CAMP_BASE_PATH + "/" + id);
+			case EVENTS:
+				id = sqlDB.insert(EventTable.TABLE_NAME, null, values);
+				id = sqlDB.insert(CampTable.TABLE_NAME, null, values);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return Uri.parse(EVENT_BASE_PATH + "/" + id);
+			case ART:
+				id = sqlDB.insert(ArtTable.TABLE_NAME, null, values);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return Uri.parse(ART_BASE_PATH + "/" + id);
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 			}
-			getContext().getContentResolver().notifyChange(uri, null);
-			return Uri.parse(CAMP_BASE_PATH + "/" + id);
+			
 		}
 
 		@Override
@@ -128,20 +189,55 @@ public class PlayaContentProvider extends ContentProvider {
 			int uriType = sURIMatcher.match(uri);
 			SQLiteDatabase sqlDB = database.getWritableDatabase();
 			int rowsDeleted = 0;
+			String id;
 			switch (uriType) {
 			case CAMPS:
-				rowsDeleted = sqlDB.delete(DBWrapper.TABLE_NAME, selection,
+				rowsDeleted = sqlDB.delete(CampTable.TABLE_NAME, selection,
 						selectionArgs);
 				break;
 			case CAMP_ID:
-				String id = uri.getLastPathSegment();
+				id = uri.getLastPathSegment();
 				if (TextUtils.isEmpty(selection)) {
-					rowsDeleted = sqlDB.delete(DBWrapper.TABLE_NAME,
+					rowsDeleted = sqlDB.delete(CampTable.TABLE_NAME,
 							CampTable.COLUMN_ID + "=" + id, 
 							null);
 				} else {
-					rowsDeleted = sqlDB.delete(DBWrapper.TABLE_NAME,
+					rowsDeleted = sqlDB.delete(CampTable.TABLE_NAME,
 							CampTable.COLUMN_ID + "=" + id 
+							+ " and " + selection,
+							selectionArgs);
+				}
+				break;
+			case EVENTS:
+				rowsDeleted = sqlDB.delete(EventTable.TABLE_NAME, selection,
+						selectionArgs);
+				break;
+			case EVENT_ID:
+				id = uri.getLastPathSegment();
+				if (TextUtils.isEmpty(selection)) {
+					rowsDeleted = sqlDB.delete(EventTable.TABLE_NAME,
+							CampTable.COLUMN_ID + "=" + id, 
+							null);
+				} else {
+					rowsDeleted = sqlDB.delete(EventTable.TABLE_NAME,
+							CampTable.COLUMN_ID + "=" + id 
+							+ " and " + selection,
+							selectionArgs);
+				}
+				break;
+			case ART:
+				rowsDeleted = sqlDB.delete(ArtTable.TABLE_NAME, selection,
+						selectionArgs);
+				break;
+			case ART_ID:
+				id = uri.getLastPathSegment();
+				if (TextUtils.isEmpty(selection)) {
+					rowsDeleted = sqlDB.delete(ArtTable.TABLE_NAME,
+							ArtTable.COLUMN_ID + "=" + id, 
+							null);
+				} else {
+					rowsDeleted = sqlDB.delete(ArtTable.TABLE_NAME,
+							ArtTable.COLUMN_ID + "=" + id 
 							+ " and " + selection,
 							selectionArgs);
 				}
@@ -160,6 +256,7 @@ public class PlayaContentProvider extends ContentProvider {
 			int uriType = sURIMatcher.match(uri);
 			SQLiteDatabase sqlDB = database.getWritableDatabase();
 			int rowsUpdated = 0;
+			String id;
 			switch (uriType) {
 			case CAMPS:
 				rowsUpdated = sqlDB.update(CampTable.TABLE_NAME, 
@@ -168,7 +265,7 @@ public class PlayaContentProvider extends ContentProvider {
 						selectionArgs);
 				break;
 			case CAMP_ID:
-				String id = uri.getLastPathSegment();
+				id = uri.getLastPathSegment();
 				if (TextUtils.isEmpty(selection)) {
 					rowsUpdated = sqlDB.update(CampTable.TABLE_NAME, 
 							values,
@@ -183,6 +280,50 @@ public class PlayaContentProvider extends ContentProvider {
 							selectionArgs);
 				}
 				break;
+			case EVENTS:
+				rowsUpdated = sqlDB.update(EventTable.TABLE_NAME, 
+						values, 
+						selection,
+						selectionArgs);
+				break;
+			case EVENT_ID:
+				id = uri.getLastPathSegment();
+				if (TextUtils.isEmpty(selection)) {
+					rowsUpdated = sqlDB.update(EventTable.TABLE_NAME, 
+							values,
+							EventTable.COLUMN_ID + "=" + id, 
+							null);
+				} else {
+					rowsUpdated = sqlDB.update(EventTable.TABLE_NAME, 
+							values,
+							EventTable.COLUMN_ID + "=" + id 
+							+ " and " 
+							+ selection,
+							selectionArgs);
+				}
+				break;
+			case ART:
+				rowsUpdated = sqlDB.update(ArtTable.TABLE_NAME, 
+						values, 
+						selection,
+						selectionArgs);
+				break;
+			case ART_ID:
+				id = uri.getLastPathSegment();
+				if (TextUtils.isEmpty(selection)) {
+					rowsUpdated = sqlDB.update(ArtTable.TABLE_NAME, 
+							values,
+							ArtTable.COLUMN_ID + "=" + id, 
+							null);
+				} else {
+					rowsUpdated = sqlDB.update(ArtTable.TABLE_NAME, 
+							values,
+							ArtTable.COLUMN_ID + "=" + id 
+							+ " and " 
+							+ selection,
+							selectionArgs);
+				}
+				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 			}
@@ -190,9 +331,18 @@ public class PlayaContentProvider extends ContentProvider {
 			return rowsUpdated;
 		}
 
-		private void checkColumns(String[] projection) {
-			String[] available = { CampTable.COLUMN_ID, CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, CampTable.COLUMN_HOMETOWN, CampTable.COLUMN_URL,
-			    	CampTable.COLUMN_YEAR, CampTable.COLUMN_CAMP_ID, CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, CampTable.COLUMN_LONGITUDE, CampTable.COLUMN_CONTACT };
+		private void checkColumns(String[] projection, int type) {
+			String[] available;
+			
+			if(type == CAMPS)
+				available = CampTable.COLUMNS;
+			else if(type == EVENTS)
+				available = EventTable.COLUMNS;
+			else if(type == ART)
+				available = ArtTable.COLUMNS;
+			else
+				available = new String[0];
+			
 			if (projection != null) {
 				HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
 				HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));

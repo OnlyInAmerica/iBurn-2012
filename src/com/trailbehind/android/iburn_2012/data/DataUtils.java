@@ -24,6 +24,8 @@ import android.util.Log;
 public class DataUtils {
 	
 	private static final String CAMP_DATA_PATH = "playa-json/camp_data.json";
+	private static final String EVENT_DATA_PATH = "playa-json/event_data.json";
+	private static final String ART_DATA_PATH = "playa-json/art_data.json";
 	// Relative to getFilesDir() (/data/data/app.namespace/)
 	
 	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Void>{
@@ -36,9 +38,12 @@ public class DataUtils {
 			}
 			
 			AssetManager assets = FragmentTabsPager.app.getAssets();
-			Gson gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.CampsDeserializer()).create();
+			
 			
 			try {
+				
+				// CAMPS
+				Gson gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.CampsDeserializer()).create();
 				//String[] asset_list = assets.list("playa-json");
 				// Get Asset
 				InputStream is = assets.open(CAMP_DATA_PATH);
@@ -47,6 +52,19 @@ public class DataUtils {
 				// Insert JSON into database
 				//content://com.trailbehind.android.iburn.playacontentprovider/camp
 				FragmentTabsPager.app.contentValuesToTable(result, PlayaContentProvider.CAMP_URI);
+				
+				// EVENTS
+				gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.EventsDeserializer()).create();
+				is = assets.open(EVENT_DATA_PATH);
+				result = gson.fromJson(inputStreamToChar(is), ArrayList.class);
+				FragmentTabsPager.app.contentValuesToTable(result, PlayaContentProvider.EVENT_URI);
+				
+				// ART
+				gson = new GsonBuilder().registerTypeAdapter(ArrayList.class, new JSONDeserializers.ArtDeserializer()).create();
+				is = assets.open(ART_DATA_PATH);
+				result = gson.fromJson(inputStreamToChar(is), ArrayList.class);
+				FragmentTabsPager.app.contentValuesToTable(result, PlayaContentProvider.ART_URI);
+				
 				Log.d("ImportJsonToCampTable","Camps sent to database");
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();
