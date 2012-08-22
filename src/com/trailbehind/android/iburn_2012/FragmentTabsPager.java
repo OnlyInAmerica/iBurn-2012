@@ -70,8 +70,13 @@ public class FragmentTabsPager extends FragmentActivity {
 
         mTabsAdapter.addTab(mTabHost.newTabSpec("map").setIndicator("Map"),
                 OpenStreetMapFragment.class, null);
+        mTabsAdapter.addTab(mTabHost.newTabSpec("art").setIndicator("Art"),
+                ArtFragment.CursorLoaderListFragment.class, null);
         mTabsAdapter.addTab(mTabHost.newTabSpec("camps").setIndicator("Camps"),
                 CampFragment.CursorLoaderListFragment.class, null);
+        mTabsAdapter.addTab(mTabHost.newTabSpec("events").setIndicator("Events"),
+                EventFragment.CursorLoaderListFragment.class, null);
+        
         /*
         mTabsAdapter.addTab(mTabHost.newTabSpec("events").setIndicator("Events"),
                 LoaderCustomSupport.AppListFragment.class, null);

@@ -23,8 +23,8 @@ class DBWrapper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     
     //TABLE INFO
-    public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
-    public static final String TABLE_NAME = CampTable.TABLE_NAME;
+    // public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
+    // public static final String TABLE_NAME = CampTable.TABLE_NAME;
 
     //Schema: Number, Name, Datetime [YYYYMMDDKKMMSS]
     /**
@@ -42,7 +42,9 @@ class DBWrapper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_STATEMENT);
+        db.execSQL(CampTable.CREATE_TABLE_STATEMENT);
+        db.execSQL(EventTable.CREATE_TABLE_STATEMENT);
+        db.execSQL(ArtTable.CREATE_TABLE_STATEMENT);
         Log.d("DBWrapper","Creating DB");
     }
     
@@ -53,7 +55,9 @@ class DBWrapper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, 
        int oldVersion, int newVersion) {
         // Drop old table and re-create
-    	db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+    	db.execSQL("DROP TABLE IF EXISTS " + CampTable.TABLE_NAME);
+    	db.execSQL("DROP TABLE IF EXISTS " + EventTable.TABLE_NAME);
+    	db.execSQL("DROP TABLE IF EXISTS " + ArtTable.TABLE_NAME);
 		onCreate(db);
     }
     
