@@ -18,6 +18,7 @@ package com.trailbehind.android.iburn_2012;
 
 import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.ArtTable;
+import com.trailbehind.android.iburn_2012.data.CampTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 import com.trailbehind.android.iburn_2012.data.EventTable;
 
@@ -191,6 +192,18 @@ public class EventFragment extends FragmentActivity {
 	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_LOCATION)));
 	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_DESCRIPTION)));
 	        	
+	        	if(!result.isNull(result.getColumnIndex(EventTable.COLUMN_HOST_CAMP_NAME))){
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_HOST_CAMP_NAME)));
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(EventTable.COLUMN_LOCATION))){
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_LOCATION)));
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(EventTable.COLUMN_DESCRIPTION))){
+	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_DESCRIPTION)));
+	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
+	        	}
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);

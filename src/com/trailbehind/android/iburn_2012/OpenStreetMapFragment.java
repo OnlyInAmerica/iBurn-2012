@@ -143,6 +143,7 @@ public class OpenStreetMapFragment extends Fragment {
     	super.onPause();
     	mLocationOverlay.disableMyLocation();
     }
+    
  
     protected boolean isRouteDisplayed() {
         // TODO Auto-generated method stub

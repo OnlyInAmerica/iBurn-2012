@@ -5,7 +5,7 @@ public class ArtJSON {
 	public static final String KEY_NAME = "name";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_ARTIST = "artist";
-	public static final String KEY_ARTIST_LOCATION = "artist";
+	public static final String KEY_ARTIST_LOCATION = "artist_location";
 	public static final String KEY_ART_ID= "id";
 	public static final String KEY_CIRCULAR_STREET = "circular_street";
 	public static final String KEY_CONTACT = "contact_email";

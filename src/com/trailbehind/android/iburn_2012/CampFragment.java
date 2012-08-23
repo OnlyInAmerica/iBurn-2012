@@ -17,6 +17,7 @@
 package com.trailbehind.android.iburn_2012;
 
 import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
+import com.trailbehind.android.iburn_2012.data.ArtTable;
 import com.trailbehind.android.iburn_2012.data.CampTable;
 import com.trailbehind.android.iburn_2012.data.EventTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
@@ -195,10 +196,19 @@ public class CampFragment extends FragmentActivity {
         		View popup = super.getPopupView();
         		
 	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_NAME)));
-	        	((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_CONTACT)));
-	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_HOMETOWN)));
-	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
-	        	
+
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_CONTACT))){
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_CONTACT)));
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_HOMETOWN))){
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_HOMETOWN)));
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_DESCRIPTION))){
+	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
+	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
+	        	}
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);

@@ -84,7 +84,7 @@ public class ArtFragment extends FragmentActivity {
     public static class CursorLoaderListFragment extends PlayaListFragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
 
         // This is the Adapter being used to display the list's data.
-        SimpleCursorAdapter mAdapter;
+        ArtCursorAdapter mAdapter;
         
         @Override
         public void restartLoader(){
@@ -102,12 +102,13 @@ public class ArtFragment extends FragmentActivity {
             setHasOptionsMenu(true);
 
             // Create an empty adapter we will use to display the loaded data.
-            
+            /*
             mAdapter = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1, null,
                     new String[] { ArtTable.COLUMN_NAME },
                     new int[] { android.R.id.text1}, 0);
-            
+            */
+            mAdapter = new ArtCursorAdapter(getActivity(), null);
             setListAdapter(mAdapter);
 
             // Start out with a progress indicator.
@@ -122,6 +123,7 @@ public class ArtFragment extends FragmentActivity {
         static final String[] ART_PROJECTION = new String[] {
             ArtTable.COLUMN_ID,
             ArtTable.COLUMN_NAME,
+            ArtTable.COLUMN_ARTIST
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -197,11 +199,25 @@ public class ArtFragment extends FragmentActivity {
         			null);
         	if(result.moveToFirst()){
         		View popup = super.getPopupView();
-        		
 	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_NAME)));
-	        	((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_ARTIST)));
-	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_CONTACT)));
-	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_DESCRIPTION)));
+	        	
+	        	if(!result.isNull(result.getColumnIndex(ArtTable.COLUMN_ARTIST))){
+	        		((TextView) popup.findViewById(R.id.popup_artist)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_ARTIST)));
+	        		((TextView) popup.findViewById(R.id.popup_artist)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(ArtTable.COLUMN_CONTACT))){
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_CONTACT)));
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(ArtTable.COLUMN_ARTIST_LOCATION))){
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_ARTIST_LOCATION)));
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(ArtTable.COLUMN_DESCRIPTION))){
+	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_DESCRIPTION)));
+	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
+	        	}
+	        	//((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_DESCRIPTION)));
 	        	
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());

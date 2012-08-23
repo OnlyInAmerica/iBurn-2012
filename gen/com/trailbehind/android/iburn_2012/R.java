@@ -30,7 +30,7 @@ public final class R {
         public static final int zoom_out=0x7f020010;
     }
     public static final class id {
-        public static final int favorite_button=0x7f040013;
+        public static final int favorite_button=0x7f040012;
         public static final int home=0x7f040007;
         public static final int icon=0x7f04000b;
         public static final int list_container=0x7f04000c;
@@ -49,11 +49,12 @@ public final class R {
         public static final int menu_show_all=0x7f040000;
         public static final int new_fragment=0x7f040008;
         public static final int pager=0x7f040009;
-        public static final int popup_contact=0x7f040014;
-        public static final int popup_description=0x7f040017;
-        public static final int popup_hometown=0x7f040015;
-        public static final int popup_location=0x7f040016;
-        public static final int popup_title=0x7f040012;
+        public static final int popup_artist=0x7f040014;
+        public static final int popup_contact=0x7f040015;
+        public static final int popup_description=0x7f040018;
+        public static final int popup_hometown=0x7f040016;
+        public static final int popup_location=0x7f040017;
+        public static final int popup_title=0x7f040013;
         public static final int simple_fragment=0x7f040006;
         public static final int text=0x7f04000a;
     }

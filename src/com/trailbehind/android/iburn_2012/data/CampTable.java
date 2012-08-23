@@ -17,8 +17,12 @@ public class CampTable {
     public static final String COLUMN_LOCATION = "location";
     public static final String COLUMN_CONTACT = "contact";
     
+    public static final String COLUMN_FAVORITE = "favorite";
+    public static final String COLUMN_USER_ADDED = "user_added";
+    
     public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_HOMETOWN, COLUMN_URL,
-    	COLUMN_YEAR, COLUMN_CAMP_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT, COLUMN_LOCATION};
+    	COLUMN_YEAR, COLUMN_CAMP_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT, COLUMN_LOCATION,
+    	COLUMN_FAVORITE, COLUMN_USER_ADDED};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
 	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " 
@@ -26,6 +30,7 @@ public class CampTable {
 	        +  COLUMN_YEAR + " integer, " + COLUMN_CAMP_ID +" integer, " 
 	        +  COLUMN_LATITUDE + " real, " + COLUMN_LONGITUDE +" real," 
 	        +  COLUMN_LOCATION + " text, " + COLUMN_CONTACT + " text,"
+	        +  COLUMN_FAVORITE + " integer default 0," + COLUMN_USER_ADDED + " integer default 0,"
 	        + "unique("+COLUMN_CAMP_ID+") on conflict replace);";
 
 }

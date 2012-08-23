@@ -33,6 +33,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
             
         	view_cache.title_col = cursor.getColumnIndexOrThrow(EventTable.COLUMN_NAME);
         	view_cache.sub_col = cursor.getColumnIndexOrThrow(EventTable.COLUMN_START_TIME);
+        	view_cache._id_col = cursor.getColumnIndexOrThrow(EventTable.COLUMN_ID);
         	if(cursor.getInt(cursor.getColumnIndexOrThrow(EventTable.COLUMN_ALL_DAY)) == 1 ){
         		view_cache.all_day = true;
         		view_cache.time_label = "All " + cursor.getString(cursor.getColumnIndexOrThrow(EventTable.COLUMN_START_TIME_PRINT));
@@ -43,9 +44,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
         	}
         	//view_cache.thumbnail_col = cursor.getColumnIndexOrThrow(SQLiteWrapper.COLUMN_THUMBNAIL_PATH);
         	view_cache._id_col = cursor.getColumnIndexOrThrow(EventTable.COLUMN_ID);
-            view.setTag(R.id.list_item_cache, view_cache);
-            //tag view with timelapse id
-            view.setTag(R.id.list_item_related_model, cursor.getInt(view_cache._id_col));
+            //view.setTag(R.id.list_item_cache, view_cache);
         }
         //Log.d("bindView","yeah");
         view_cache.title.setText(cursor.getString(view_cache.title_col));

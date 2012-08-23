@@ -23,8 +23,12 @@ public class ArtTable {
     public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_CONTACT = "contact";
     
+    public static final String COLUMN_FAVORITE = "favorite";
+    public static final String COLUMN_USER_ADDED = "user_added";
+    
     public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_ARTIST, COLUMN_ARTIST_LOCATION, COLUMN_URL,
-    	COLUMN_CIRCULAR_STREET, COLUMN_TIME_ADDRESS, COLUMN_DISTANCE, COLUMN_HOUR, COLUMN_YEAR, COLUMN_MINUTE, COLUMN_ART_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT};
+    	COLUMN_CIRCULAR_STREET, COLUMN_TIME_ADDRESS, COLUMN_DISTANCE, COLUMN_HOUR, COLUMN_YEAR, COLUMN_MINUTE, COLUMN_ART_ID, COLUMN_LATITUDE, 
+    	COLUMN_LONGITUDE, COLUMN_CONTACT, COLUMN_FAVORITE, COLUMN_USER_ADDED};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
 	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " 
@@ -34,6 +38,7 @@ public class ArtTable {
 	        +  COLUMN_ARTIST + " text, "+ COLUMN_URL +" text, " 
 	        +  COLUMN_YEAR + " integer, " + COLUMN_ART_ID +" integer, " 
 	        +  COLUMN_LATITUDE + " real, " + COLUMN_LONGITUDE +" real," 
+	        +  COLUMN_FAVORITE + " integer default 0," + COLUMN_USER_ADDED + " integer default 0,"
 	        +  COLUMN_CONTACT + " text,"
 	        + "unique("+COLUMN_ART_ID+") on conflict replace);";
 
