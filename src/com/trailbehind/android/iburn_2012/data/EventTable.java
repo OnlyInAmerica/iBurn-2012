@@ -18,12 +18,14 @@ public class EventTable {
     public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_LOCATION = "location";
     public static final String COLUMN_START_TIME = "start_time";
+    public static final String COLUMN_START_TIME_PRINT = "start_time_print";
     public static final String COLUMN_END_TIME = "end_time";
+    public static final String COLUMN_END_TIME_PRINT = "end_time_print";
     //public static final String COLUMN_CONTACT = "contact";
     
     public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_ALL_DAY, COLUMN_URL,
     	COLUMN_YEAR, COLUMN_CHECK_LOCATION, COLUMN_HOST_CAMP_ID, COLUMN_HOST_CAMP_NAME, COLUMN_LATITUDE, COLUMN_LONGITUDE,
-    	COLUMN_START_TIME, COLUMN_END_TIME};
+    	COLUMN_LOCATION, COLUMN_START_TIME, COLUMN_END_TIME, COLUMN_START_TIME_PRINT, COLUMN_END_TIME_PRINT};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
 	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " + COLUMN_CHECK_LOCATION + " integer, " 
@@ -31,6 +33,7 @@ public class EventTable {
 	        +  COLUMN_YEAR + " integer, " + COLUMN_HOST_CAMP_ID +" integer, " 
 	        +  COLUMN_HOST_CAMP_NAME + " text, " + COLUMN_START_TIME + " text, "
 	        +  COLUMN_END_TIME + " text, " + COLUMN_LATITUDE +" real," 
+	        +  COLUMN_START_TIME_PRINT + " text, " + COLUMN_END_TIME_PRINT + " text,"
 	        +  COLUMN_LONGITUDE + " real, " + COLUMN_LOCATION + " text);";
 
 }

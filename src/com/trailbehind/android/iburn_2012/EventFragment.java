@@ -33,19 +33,23 @@ import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.provider.Contacts.People;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 /**
@@ -78,13 +82,7 @@ public class EventFragment extends FragmentActivity {
         public void restartLoader(){
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
     	 }
-        
-        @Override
-        public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        	View v = inflater.inflate(R.layout.listview, null);
-        	emptyText = (TextView) v.findViewById(android.R.id.empty);
-        	return v;
-        }
+
 
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -118,6 +116,7 @@ public class EventFragment extends FragmentActivity {
             EventTable.COLUMN_ID,
             EventTable.COLUMN_NAME,
             EventTable.COLUMN_START_TIME,
+            EventTable.COLUMN_START_TIME_PRINT,
             EventTable.COLUMN_ALL_DAY,
         };
 
@@ -171,6 +170,31 @@ public class EventFragment extends FragmentActivity {
             } else {
                 setListShownNoAnimation(true);
             }*/
+        }
+        
+        @Override
+        public void onListItemClick (ListView l, View v, int position, long id){
+        	String event_id = v.getTag(R.id.list_item_related_model).toString();
+        	Cursor result = getActivity().getContentResolver().query((PlayaContentProvider.EVENT_URI.buildUpon().appendPath(event_id).build()), 
+        			new String[] {EventTable.COLUMN_NAME, EventTable.COLUMN_DESCRIPTION, 
+        						  EventTable.COLUMN_LATITUDE, EventTable.COLUMN_LONGITUDE, 
+        						  EventTable.COLUMN_LOCATION, EventTable.COLUMN_HOST_CAMP_NAME,
+        						  EventTable.COLUMN_HOST_CAMP_ID},
+        			null, 
+        			null, 
+        			null);
+        	if(result.moveToFirst()){
+        		View popup = super.getPopupView();
+        		
+	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_NAME)));
+	        	((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_HOST_CAMP_NAME)));
+	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_LOCATION)));
+	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_DESCRIPTION)));
+	        	
+	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        	pw.setBackgroundDrawable(new BitmapDrawable());
+	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);
+        	}
         }
 
         public void onLoaderReset(Loader<Cursor> loader) {

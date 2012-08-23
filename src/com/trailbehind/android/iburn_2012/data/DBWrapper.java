@@ -77,7 +77,8 @@ class DBWrapper extends SQLiteOpenHelper {
     	db.execSQL("DROP TABLE IF EXISTS " + ArtTable.TABLE_NAME);
 		onCreate(db);
     }
-    
+    /*
+    //Comment this out to disable copying database from assets
     @Override
     public synchronized SQLiteDatabase getWritableDatabase() {
     	boolean dbExist = checkDataBase();
@@ -103,7 +104,7 @@ class DBWrapper extends SQLiteOpenHelper {
     	return openDataBase(true);
     }
     
-   
+   */
     public static ContentValues cursorRowToContentValues(Cursor cursor){
     	ContentValues values = new ContentValues();
     	
@@ -139,7 +140,7 @@ class DBWrapper extends SQLiteOpenHelper {
      * This is done by transfering bytestream.
      */
     private void copyDataBase() throws IOException{
- 
+    	Log.d("CopyDataBase","Copying...");
     	//Open your local db as the input stream
     	InputStream myInput = FragmentTabsPager.app.getAssets().open(DATABASE_PATH + DATABASE_NAME);
  

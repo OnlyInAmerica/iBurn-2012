@@ -18,6 +18,7 @@ package com.trailbehind.android.iburn_2012;
 
 import com.trailbehind.android.iburn_2012.CampFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.ArtTable;
+import com.trailbehind.android.iburn_2012.data.CampTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
 import android.support.v4.app.FragmentActivity;
@@ -35,6 +36,7 @@ import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +44,7 @@ import android.provider.BaseColumns;
 import android.provider.Contacts.People;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +52,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -179,9 +183,30 @@ public class ArtFragment extends FragmentActivity {
             mAdapter.swapCursor(null);
         }
         
-        @Override public void onListItemClick(ListView l, View v, int position, long id) {
-            View popup = this.getPopupView();
-            //popup.findViewById(R.id.popup_title)
+        @Override
+        public void onListItemClick (ListView l, View v, int position, long id){
+        	
+        	String art_id = v.getTag(R.id.list_item_related_model).toString();
+        	Cursor result = getActivity().getContentResolver().query((PlayaContentProvider.ART_URI.buildUpon().appendPath(art_id).build()), 
+        			new String[] {ArtTable.COLUMN_NAME, ArtTable.COLUMN_DESCRIPTION, 
+        						  ArtTable.COLUMN_LATITUDE, ArtTable.COLUMN_LONGITUDE, 
+        						  ArtTable.COLUMN_TIME_ADDRESS, ArtTable.COLUMN_CONTACT,
+        						  ArtTable.COLUMN_ARTIST, ArtTable.COLUMN_ARTIST_LOCATION},
+        			null, 
+        			null, 
+        			null);
+        	if(result.moveToFirst()){
+        		View popup = super.getPopupView();
+        		
+	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_NAME)));
+	        	((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_ARTIST)));
+	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_CONTACT)));
+	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(ArtTable.COLUMN_DESCRIPTION)));
+	        	
+	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        	pw.setBackgroundDrawable(new BitmapDrawable());
+	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);
+        	}
         }
     }
    

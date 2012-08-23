@@ -1,7 +1,9 @@
 package com.trailbehind.android.iburn_2012.data;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import android.content.ContentValues;
@@ -90,6 +92,12 @@ public class JSONDeserializers {
 		public ArrayList<ContentValues> deserialize(JsonElement json, Type type,
 		        JsonDeserializationContext context) throws JsonParseException {
 			
+			// Playa-data date input format
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// Date print format E hh:mm
+			SimpleDateFormat datePrinter = new SimpleDateFormat("EEEE h:mm a");
+			// All day date print format E
+			SimpleDateFormat dayPrinter = new SimpleDateFormat("EEEE");
 			ArrayList<ContentValues> result = new ArrayList<ContentValues>();
 	
 			JsonArray array= json.getAsJsonArray();
@@ -165,17 +173,29 @@ public class JSONDeserializers {
 								occurence = (JsonObject) occurences.get(y);
 								
 								if(occurence.has(EventJSON.KEY_OCCURENCE_START_TIME))
-									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull())
+									if(!occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).isJsonNull()){
 										cv.put(EventTable.COLUMN_START_TIME, occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
+										Date startDate = dateFormatter.parse(occurence.get(EventJSON.KEY_OCCURENCE_START_TIME).getAsString());
+										if(cv.getAsInteger(EventTable.COLUMN_ALL_DAY) == 0){
+											cv.put(EventTable.COLUMN_START_TIME_PRINT, datePrinter.format(startDate));
+										}else if(cv.getAsInteger(EventTable.COLUMN_ALL_DAY) == 1){
+											cv.put(EventTable.COLUMN_START_TIME_PRINT, dayPrinter.format(startDate));
+										}	
+									}
 								
 								if(occurence.has(EventJSON.KEY_OCCURENCE_END_TIME))
-									if(!occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).isJsonNull())
+									if(!occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).isJsonNull()){
 										cv.put(EventTable.COLUMN_END_TIME, occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).getAsString());
+										Date endDate = dateFormatter.parse(occurence.get(EventJSON.KEY_OCCURENCE_END_TIME).getAsString());
+										if(cv.getAsInteger(EventTable.COLUMN_ALL_DAY) == 0){
+											cv.put(EventTable.COLUMN_END_TIME_PRINT, datePrinter.format(endDate));
+										}else if(cv.getAsInteger(EventTable.COLUMN_ALL_DAY) == 1){
+											cv.put(EventTable.COLUMN_END_TIME_PRINT, dayPrinter.format(endDate));
+										}	
+									}
 								
-								// Java passes method arguments by-value
-								// So we can send multiple entries which
-								// differ only by start and end time
 								result.add(cv);	
+								cv = new ContentValues(cv);
 							}
 							
 						}
@@ -220,7 +240,11 @@ public class JSONDeserializers {
 					
 					if(object.has(ArtJSON.KEY_ART_ID))
 						if(!object.get(ArtJSON.KEY_ART_ID).isJsonNull())
-						cv.put(ArtTable.COLUMN_ART_ID, object.get(ArtJSON.KEY_ART_ID).getAsInt()); 
+						cv.put(ArtTable.COLUMN_ART_ID, object.get(ArtJSON.KEY_ART_ID).getAsInt());
+					
+					if(object.has(ArtJSON.KEY_ARTIST_LOCATION))
+						if(!object.get(ArtJSON.KEY_ARTIST_LOCATION).isJsonNull())
+						cv.put(ArtTable.COLUMN_ARTIST_LOCATION, object.get(ArtJSON.KEY_ARTIST_LOCATION).getAsString());
 					
 					if(object.has(ArtJSON.KEY_CONTACT))
 						if(!object.get(ArtJSON.KEY_CONTACT).isJsonNull())

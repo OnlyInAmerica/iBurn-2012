@@ -18,6 +18,7 @@ package com.trailbehind.android.iburn_2012;
 
 import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.CampTable;
+import com.trailbehind.android.iburn_2012.data.EventTable;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
 import android.support.v4.app.FragmentActivity;
@@ -35,6 +36,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,15 +44,18 @@ import android.provider.BaseColumns;
 import android.provider.Contacts.People;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 /**
@@ -172,6 +177,32 @@ public class CampFragment extends FragmentActivity {
             } else {
                 setListShownNoAnimation(true);
             }*/
+        }
+        
+        @Override
+        public void onListItemClick (ListView l, View v, int position, long id){
+        	
+        	String camp_id = v.getTag(R.id.list_item_related_model).toString();
+        	Cursor result = getActivity().getContentResolver().query((PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build()), 
+        			new String[] {CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, 
+        						  CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, 
+        						  CampTable.COLUMN_LOCATION, CampTable.COLUMN_CONTACT,
+        						  CampTable.COLUMN_HOMETOWN},
+        			null, 
+        			null, 
+        			null);
+        	if(result.moveToFirst()){
+        		View popup = super.getPopupView();
+        		
+	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_NAME)));
+	        	((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_CONTACT)));
+	        	((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_HOMETOWN)));
+	        	((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
+	        	
+	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        	pw.setBackgroundDrawable(new BitmapDrawable());
+	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);
+        	}
         }
 
         public void onLoaderReset(Loader<Cursor> loader) {

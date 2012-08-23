@@ -9,6 +9,7 @@ public class ArtTable {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_ARTIST = "artist";
+    public static final String COLUMN_ARTIST_LOCATION = "artist_location";
     public static final String COLUMN_CIRCULAR_STREET = "circ_street";
     public static final String COLUMN_TIME_ADDRESS = "time_address";
     public static final String COLUMN_DISTANCE = "distance";
@@ -22,14 +23,14 @@ public class ArtTable {
     public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_CONTACT = "contact";
     
-    public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_ARTIST, COLUMN_URL,
+    public static final String[] COLUMNS = {COLUMN_ID, COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_ARTIST, COLUMN_ARTIST_LOCATION, COLUMN_URL,
     	COLUMN_CIRCULAR_STREET, COLUMN_TIME_ADDRESS, COLUMN_DISTANCE, COLUMN_HOUR, COLUMN_YEAR, COLUMN_MINUTE, COLUMN_ART_ID, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_CONTACT};
     
     public static final String CREATE_TABLE_STATEMENT = "create table " + TABLE_NAME + " ("+ COLUMN_ID +" integer primary key autoincrement, " 
 	        +  COLUMN_NAME + " text, "+ COLUMN_DESCRIPTION + " text, " 
 	        +  COLUMN_CIRCULAR_STREET + " text, " + COLUMN_TIME_ADDRESS + " text,"
 	        +  COLUMN_DISTANCE + " real, " + COLUMN_HOUR + " integer,"
-	        +  COLUMN_MINUTE + " integer, "
+	        +  COLUMN_MINUTE + " integer, " + COLUMN_ARTIST_LOCATION + " text,"
 	        +  COLUMN_ARTIST + " text, "+ COLUMN_URL +" text, " 
 	        +  COLUMN_YEAR + " integer, " + COLUMN_ART_ID +" integer, " 
 	        +  COLUMN_LATITUDE + " real, " + COLUMN_LONGITUDE +" real," 
