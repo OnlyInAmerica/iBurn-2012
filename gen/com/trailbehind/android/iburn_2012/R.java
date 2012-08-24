@@ -34,7 +34,7 @@ public final class R {
         public static final int zoom_out=0x7f020014;
     }
     public static final class id {
-        public static final int button=0x7f040016;
+        public static final int button=0x7f040015;
         public static final int favorite_button=0x7f040017;
         public static final int favorite_button_state=0x7f040003;
         public static final int home=0x7f04000a;
@@ -64,7 +64,7 @@ public final class R {
         public static final int popup_description=0x7f04001c;
         public static final int popup_hometown=0x7f04001a;
         public static final int popup_location=0x7f04001b;
-        public static final int popup_title=0x7f040015;
+        public static final int popup_title=0x7f040016;
         public static final int simple_fragment=0x7f040009;
         public static final int text=0x7f04000d;
     }

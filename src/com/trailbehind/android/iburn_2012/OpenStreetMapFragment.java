@@ -199,7 +199,7 @@ public class OpenStreetMapFragment extends Fragment {
 	               			 	Log.d("itemClick",item.getTitle() + " " + item.mDescription);
 	               			 	((TextView) popup.findViewById(R.id.popup_title)).setText(item.getTitle());
 	               			 	
-	                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.MATCH_PARENT,40, true);
+	                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.MATCH_PARENT,100, true);
 	                        	pw.setOnDismissListener(new OnDismissListener(){
 									@Override
 									public void onDismiss() {
