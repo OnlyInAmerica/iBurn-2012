@@ -1,5 +1,9 @@
 package com.trailbehind.android.iburn_2012;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
 import org.osmdroid.ResourceProxy;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
@@ -11,19 +15,37 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.BoundedMapView;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.MyLocationOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.TilesOverlay;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.trailbehind.android.iburn_2012.data.CampTable;
+import com.trailbehind.android.iburn_2012.data.JSONDeserializers;
+import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
+
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
 
 /**
 * Based on osmdroid default map view activity.
@@ -51,6 +73,8 @@ public class OpenStreetMapFragment extends Fragment {
     /** Called when the activity is first created. */
     private MapController mapController;
     private BoundedMapView mapView;
+    
+    public static View container;
     //private MapView mapView;
     
     private MyLocationOverlay mLocationOverlay;
@@ -78,6 +102,7 @@ public class OpenStreetMapFragment extends Fragment {
    
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    	
     	// http://iburn.s3.amazonaws.com/2012
     	final MapTileProviderBasic tileProvider = new MapTileProviderBasic(FragmentTabsPager.app);
 		//final XYTileSource tileSource = new XYTileSource("burn", null, 5, 18, 256, ".png",
@@ -108,6 +133,7 @@ public class OpenStreetMapFragment extends Fragment {
 
 		//MapTileAssetProvider mtap = new MapTileAssetProvider(assets, tileSource, 0);
     	View view = inflater.inflate(R.layout.map, null);
+    	this.container = (View) view.findViewById(R.id.mapview);
     	mapView = (BoundedMapView) view.findViewById(R.id.mapview);
     	
     	mResourceProxy = new ResourceProxyImpl(FragmentTabsPager.app);
@@ -116,11 +142,33 @@ public class OpenStreetMapFragment extends Fragment {
 		mapView.getOverlays().add(this.mLocationOverlay);
 		//mapView.setMultiTouchControls(true);
 		
+		//ItemizedIconOverlay<OverlayItem> itemOverlay = new ItemizedIconOverlay<OverlayItem>(generateOverlayItems(),
+        ItemizedOverlayWithFocus<OverlayItem> itemOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
+		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                        @Override
+                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
+               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
+                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+            	        	pw.setBackgroundDrawable(new BitmapDrawable());
+            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.CENTER, 0, 0);
+            	        	
+                                return false; // We 'handled' this event.
+                        }
+
+                        @Override
+                        public boolean onItemLongPress(final int index, final OverlayItem item) {
+                                return false;
+                        }
+                }, mResourceProxy);
+		
+		
     	
     	//mapView = (MapView) view.findViewById(R.id.mapview);
     	BoundingBoxE6 bounds = new BoundingBoxE6(northEast, southWest);
     	mapView.setScrollableAreaLimit(bounds);
     	mapView.getOverlays().add(MyTilesOverlay);
+    	mapView.getOverlays().add(itemOverlay);
     	//mapView.setTileSource(tileSource);
         mapView.setBuiltInZoomControls(true);
         mapView.setUseDataConnection(false);
@@ -149,4 +197,39 @@ public class OpenStreetMapFragment extends Fragment {
         // TODO Auto-generated method stub
         return false;
     }
+    
+    public static ArrayList<OverlayItem> generateOverlayItems(){
+    	
+		final ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+		String[] projection = new String[]{CampTable.COLUMN_NAME, CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, CampTable.COLUMN_HOMETOWN};
+		Cursor camps = FragmentTabsPager.app.getContentResolver().query(PlayaContentProvider.CAMP_URI, projection, null, null, null);
+        if(camps.moveToFirst()){
+        	do{
+        		if(!camps.isNull(camps.getColumnIndex(CampTable.COLUMN_LATITUDE))){
+	        		items.add(new OverlayItem(camps.getString(camps.getColumnIndex(CampTable.COLUMN_NAME)),
+	        				 "test", new GeoPoint(camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LATITUDE)),
+	        						 camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LONGITUDE))))); 
+	        		//Log.d("Camp Location added", String.valueOf(camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LATITUDE))) + " : " + camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LONGITUDE)));
+        		}
+        	}while(camps.moveToNext());
+        }
+
+        return items;
+    }
+    
+    public static class loadOverlayItems extends AsyncTask<Void, Void, ArrayList<OverlayItem>>{
+		// This method is executed in a separate thread
+		@Override
+		protected ArrayList<OverlayItem> doInBackground(Void... input) {
+			return generateOverlayItems();
+		}
+		
+		@Override
+	    protected void onPostExecute(ArrayList<OverlayItem> result) {
+			
+			super.onPostExecute(result);
+
+	    }
+		
+	}
 }   

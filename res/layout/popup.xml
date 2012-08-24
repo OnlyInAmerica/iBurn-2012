@@ -4,46 +4,34 @@
     android:layout_height="fill_parent"
     android:background="@android:drawable/screen_background_dark"
     android:orientation="vertical"
-    android:padding="5dp" >
-    
-    <ImageButton
-        android:id="@+id/favorite_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="5dp"
-        android:src="@android:drawable/star_big_off" />
+    android:padding="10dp" >
 
     <TextView
         android:id="@+id/popup_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/favorite_button"
         android:ellipsize="marquee"
         android:text="Title"
         android:textSize="24dp" />
+    
+    <ImageButton
+        android:id="@+id/favorite_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/popup_title"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:src="@android:drawable/star_big_off" />
 
     <TextView
-        android:id="@+id/popup_artist"
+        android:id="@+id/popup_contact"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/popup_title"
         android:ellipsize="marquee"
         android:text="contact"
-        android:visibility="gone"
-        android:textSize="20dp" />
-    
-    <TextView
-        android:id="@+id/popup_contact"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/popup_artist"
-        android:ellipsize="marquee"
-        android:text="contact"
-        android:visibility="gone"
         android:textSize="20dp" />
 
     <TextView
@@ -53,14 +41,13 @@
         android:layout_below="@id/popup_contact"
         android:ellipsize="marquee"
         android:text="hometown"
-        android:visibility="gone"
         android:textSize="20dp" />
     
     <TextView
         android:id="@+id/popup_location"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/popup_hometown"
+        android:layout_below="@id/popup_contact"
         android:ellipsize="marquee"
         android:text="location"
         android:visibility="gone"
@@ -70,7 +57,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/popup_location" >
+        android:layout_below="@id/popup_hometown" >
 
         <TextView
             android:id="@+id/popup_description"
@@ -79,7 +66,6 @@
             android:ellipsize="marquee"
             android:singleLine="false"
             android:text="description"
-            android:visibility="gone"
             android:textSize="18dp" />
     </ScrollView>
 
