@@ -26,6 +26,7 @@ public class iBurnApplication extends Application {
 	@Override
 	public void onCreate(){
 		LocalBroadcastManager.getInstance(this).registerReceiver(dbReadyReceiver, new IntentFilter("dbReady"));
+		LocalBroadcastManager.getInstance(this).registerReceiver(embargoClearReceiver, new IntentFilter("embargoClear"));
 	}
 	
 	public Uri contentValuesToTable(ArrayList<ContentValues> cv, Uri uri){
@@ -48,6 +49,17 @@ public class iBurnApplication extends Application {
 	  	    int status = intent.getIntExtra("status", -1);
 	  	    if(status == 1){
 	  	    	dbReady = true;
+	  	    }
+	  	  }
+	 };
+	 
+	 private BroadcastReceiver embargoClearReceiver = new BroadcastReceiver() {
+	  	  @Override
+	  	  public void onReceive(Context context, Intent intent) {
+	  	    // 1 -- success, 0 -- error, -1 no data
+	  	    int status = intent.getIntExtra("status", -1);
+	  	    if(status == 1){
+	  	    	embargoClear = true;
 	  	    }
 	  	  }
 	 };

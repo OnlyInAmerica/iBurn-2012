@@ -394,6 +394,6 @@ public class OpenStreetMapFragment extends Fragment {
  	private void sendEmbargoClearMessage(int status) { 
 	  	  Intent intent = new Intent("embargoClear");
 	  	  intent.putExtra("status", status);
-	  	  LocalBroadcastManager.getInstance(CampFragment.c).sendBroadcast(intent);
+	  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
 	  	}
 }   

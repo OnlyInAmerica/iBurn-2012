@@ -91,18 +91,15 @@ public class DataUtils {
 		
 		@Override
 	    protected void onPostExecute(Integer result) {
-			sendSuccessMessage(result);
+			sendDbReadyMessage(result);
 			super.onPostExecute(result);
 
 	    }
 		
-		private void sendSuccessMessage(int result) { // 0 = service stopped , 1 = service started, 2 = refresh view with call to bartApiRequest(), 3 = 
-		  	  int status = 3; // hardcode status for calling TheActivity.parseBart
-			  //Log.d("BART_Response", result);
+		private void sendDbReadyMessage(int result) { 
 		  	  Intent intent = new Intent("dbReady");
-		  	  // You can also include some extra data.
 		  	  intent.putExtra("status", result);
-		  	  LocalBroadcastManager.getInstance(CampFragment.c).sendBroadcast(intent);
+		  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
 		  	}
 		
 	}
