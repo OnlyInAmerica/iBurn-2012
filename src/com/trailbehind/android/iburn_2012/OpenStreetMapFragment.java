@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.osmdroid.ResourceProxy;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.modules.MapTileAssetProvider;
@@ -73,7 +76,7 @@ import android.widget.Toast;
 public class OpenStreetMapFragment extends Fragment {
     /** Called when the activity is first created. */
     private MapController mapController;
-    private BoundedMapView mapView;
+    static BoundedMapView mapView;
     
     public static View container;
     //private MapView mapView;
@@ -82,10 +85,16 @@ public class OpenStreetMapFragment extends Fragment {
     
     private MyLocationOverlay mLocationOverlay;
 	private ResourceProxy mResourceProxy;
+	
+	static ItemizedOverlayWithFocus poiOverlay;
     
     // Map bounds
     private final GeoPoint northEast = new GeoPoint(40802822, -119172673);
 	private final GeoPoint southWest = new GeoPoint(40759210, -119234540);
+	
+	// Constants
+	
+	final static int PINS_AT_LEVEL = 17;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +147,28 @@ public class OpenStreetMapFragment extends Fragment {
     	View view = inflater.inflate(R.layout.map, null);
     	this.container = (View) view.findViewById(R.id.mapview);
     	mapView = (BoundedMapView) view.findViewById(R.id.mapview);
-    	
+    	mapView.setMapListener(new MapListener(){
+
+			@Override
+			public boolean onScroll(ScrollEvent arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean onZoom(ZoomEvent arg0) {
+				Log.d("Zoom:",String.valueOf(arg0.getZoomLevel()));
+				if(arg0.getZoomLevel() > OpenStreetMapFragment.PINS_AT_LEVEL){
+					if(!mapView.getOverlays().contains(poiOverlay))
+						mapView.getOverlays().add(poiOverlay);
+				} else{
+					if(mapView.getOverlays().contains(poiOverlay))
+						mapView.getOverlays().remove(poiOverlay);
+				}
+				return false;
+			}
+    		
+    	});
     	mResourceProxy = new ResourceProxyImpl(FragmentTabsPager.app);
         mLocationOverlay = new MyLocationOverlay(FragmentTabsPager.app, mapView,
 				mResourceProxy);
@@ -146,7 +176,7 @@ public class OpenStreetMapFragment extends Fragment {
 		//mapView.setMultiTouchControls(true);
 		
 		//ItemizedIconOverlay<OverlayItem> itemOverlay = new ItemizedIconOverlay<OverlayItem>(generateOverlayItems(),
-        ItemizedOverlayWithFocus<OverlayItem> itemOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
+        poiOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
 		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
@@ -183,7 +213,7 @@ public class OpenStreetMapFragment extends Fragment {
     	BoundingBoxE6 bounds = new BoundingBoxE6(northEast, southWest);
     	mapView.setScrollableAreaLimit(bounds);
     	mapView.getOverlays().add(MyTilesOverlay);
-    	mapView.getOverlays().add(itemOverlay);
+    	
     	//mapView.setTileSource(tileSource);
         mapView.setBuiltInZoomControls(true);
         mapView.setUseDataConnection(false);
