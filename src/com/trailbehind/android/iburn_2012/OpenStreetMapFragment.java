@@ -37,6 +37,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -50,6 +51,7 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -82,7 +84,11 @@ public class OpenStreetMapFragment extends Fragment {
     public static View container;
     //private MapView mapView;
     
+    // prevent more than one poi touch event being dispatched at once
     public static boolean mapOverlayShowing = false;
+    
+    // keep track of activePoi index 
+    public static int activePoi = -1;
     
     private MyLocationOverlay mLocationOverlay;
 	private ResourceProxy mResourceProxy;
@@ -185,22 +191,31 @@ public class OpenStreetMapFragment extends Fragment {
 		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        	
                         	if(mapOverlayShowing == false){
+                        		activePoi = index;
 	                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
 	               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
-	                        	PopupWindow pw = new PopupWindow(popup,200,200, true);
+	               			 	Log.d("itemClick",item.getTitle() + " " + item.mDescription);
+	               			 	((TextView) popup.findViewById(R.id.popup_title)).setText(item.getTitle());
+	               			 	
+	                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.MATCH_PARENT,40, true);
 	                        	pw.setOnDismissListener(new OnDismissListener(){
 									@Override
 									public void onDismiss() {
 										mapOverlayShowing = false;
+										poiOverlay.getItem(activePoi).setMarker(getResources().getDrawable(R.drawable.red_pin));
 										
 									}
 	                        	});
+
+	                        	item.setMarker(getResources().getDrawable(R.drawable.blue_pin));
 	                        	pw.setFocusable(true);
 	                        	pw.setOutsideTouchable(true);
 	            	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	            	        	//pw.
-	            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.CENTER, 0, 0);
+	            	        	//pw.showAsDropDown(OpenStreetMapFragment.container);
+	            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.BOTTOM, 0, 0);
 	            	        	mapOverlayShowing = true;
                         	}
                                 return false; // We 'handled' this event.
@@ -211,7 +226,7 @@ public class OpenStreetMapFragment extends Fragment {
                                 return false;
                         }
                 }, mResourceProxy);
-			
+		
 		
     	
     	//mapView = (MapView) view.findViewById(R.id.mapview);
@@ -251,16 +266,21 @@ public class OpenStreetMapFragment extends Fragment {
     public static ArrayList<OverlayItem> generateOverlayItems(){
     	
 		final ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-		String[] projection = new String[]{CampTable.COLUMN_NAME, CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, CampTable.COLUMN_HOMETOWN};
-		Cursor camps = FragmentTabsPager.app.getContentResolver().query(PlayaContentProvider.CAMP_URI, projection, null, null, null);
+		String[] projection = new String[]{CampTable.COLUMN_NAME, CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, CampTable.COLUMN_ID};
+		Cursor camps = FragmentTabsPager.app.getContentResolver().query(PlayaContentProvider.CAMP_URI, projection, null, null, CampTable.COLUMN_LATITUDE + " ASC");
         if(camps.moveToFirst()){
+        	Drawable base_pin = FragmentTabsPager.app.getResources().getDrawable(R.drawable.red_pin);
+        	OverlayItem item;
         	do{
         		if(!camps.isNull(camps.getColumnIndex(CampTable.COLUMN_LATITUDE))){
-	        		items.add(new OverlayItem(camps.getString(camps.getColumnIndex(CampTable.COLUMN_NAME)),
-	        				 "test", new GeoPoint(camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LATITUDE)),
-	        						 camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LONGITUDE))))); 
+        			item = new OverlayItem(camps.getString(camps.getColumnIndex(CampTable.COLUMN_NAME)),
+        					camps.getString(camps.getColumnIndex(CampTable.COLUMN_ID)), new GeoPoint(camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LATITUDE)),
+	        						 camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LONGITUDE))));
+        			item.setMarker(base_pin);
+	        		items.add(item); 
 	        		//Log.d("Camp Location added", String.valueOf(camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LATITUDE))) + " : " + camps.getDouble(camps.getColumnIndex(CampTable.COLUMN_LONGITUDE)));
         		}
+
         	}while(camps.moveToNext());
         }
 

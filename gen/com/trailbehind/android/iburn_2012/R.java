@@ -11,25 +11,30 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int center=0x7f020000;
-        public static final int direction_arrow=0x7f020001;
-        public static final int home=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int ic_menu_compass=0x7f020004;
-        public static final int ic_menu_mapmode=0x7f020005;
-        public static final int ic_menu_mylocation=0x7f020006;
-        public static final int ic_menu_offline=0x7f020007;
-        public static final int icon=0x7f020008;
-        public static final int marker_default=0x7f020009;
-        public static final int marker_default_focused_base=0x7f02000a;
-        public static final int navto_small=0x7f02000b;
-        public static final int next=0x7f02000c;
-        public static final int person=0x7f02000d;
-        public static final int previous=0x7f02000e;
-        public static final int zoom_in=0x7f02000f;
-        public static final int zoom_out=0x7f020010;
+        public static final int blue_pin=0x7f020000;
+        public static final int center=0x7f020001;
+        public static final int direction_arrow=0x7f020002;
+        public static final int green_pin=0x7f020003;
+        public static final int home=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int ic_menu_compass=0x7f020006;
+        public static final int ic_menu_mapmode=0x7f020007;
+        public static final int ic_menu_mylocation=0x7f020008;
+        public static final int ic_menu_offline=0x7f020009;
+        public static final int icon=0x7f02000a;
+        public static final int marker_default=0x7f02000b;
+        public static final int marker_default_focused_base=0x7f02000c;
+        public static final int navto_small=0x7f02000d;
+        public static final int next=0x7f02000e;
+        public static final int person=0x7f02000f;
+        public static final int previous=0x7f020010;
+        public static final int red_pin=0x7f020011;
+        public static final int right_arrow=0x7f020012;
+        public static final int zoom_in=0x7f020013;
+        public static final int zoom_out=0x7f020014;
     }
     public static final class id {
+        public static final int button=0x7f040016;
         public static final int favorite_button=0x7f040017;
         public static final int favorite_button_state=0x7f040003;
         public static final int home=0x7f04000a;
@@ -54,11 +59,11 @@ public final class R {
         public static final int menu_show_all=0x7f040000;
         public static final int new_fragment=0x7f04000b;
         public static final int pager=0x7f04000c;
-        public static final int popup_artist=0x7f040016;
-        public static final int popup_contact=0x7f040018;
-        public static final int popup_description=0x7f04001b;
-        public static final int popup_hometown=0x7f040019;
-        public static final int popup_location=0x7f04001a;
+        public static final int popup_artist=0x7f040018;
+        public static final int popup_contact=0x7f040019;
+        public static final int popup_description=0x7f04001c;
+        public static final int popup_hometown=0x7f04001a;
+        public static final int popup_location=0x7f04001b;
         public static final int popup_title=0x7f040015;
         public static final int simple_fragment=0x7f040009;
         public static final int text=0x7f04000d;
