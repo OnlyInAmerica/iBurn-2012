@@ -79,7 +79,7 @@
             android:ellipsize="marquee"
             android:singleLine="false"
             android:text="description"
-            
+            android:visibility="gone"
             android:textSize="18dp" />
     </ScrollView>
 

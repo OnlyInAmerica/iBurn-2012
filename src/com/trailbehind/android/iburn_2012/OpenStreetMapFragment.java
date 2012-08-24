@@ -32,7 +32,11 @@ import com.trailbehind.android.iburn_2012.data.CampTable;
 import com.trailbehind.android.iburn_2012.data.JSONDeserializers;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -41,11 +45,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
@@ -90,34 +96,31 @@ public class OpenStreetMapFragment extends Fragment {
     // keep track of activePoi index 
     public static int activePoi = -1;
     
+    // screen-bottom popup
+    public static PopupWindow pw;
+    
     private MyLocationOverlay mLocationOverlay;
 	private ResourceProxy mResourceProxy;
 	
 	static ItemizedOverlayWithFocus poiOverlay;
+		
 	//static ItemizedOverlayWithBubble poiOverlay;
+
     
     // Map bounds
     private final GeoPoint northEast = new GeoPoint(40802822, -119172673);
 	private final GeoPoint southWest = new GeoPoint(40759210, -119234540);
 	
-	// Constants
-	
-	final static int PINS_AT_LEVEL = 17;
+	// Zoom Constants
+	final static int PINS_AT_ZOOM = 17;
+	final static int EMBARGO_MAX_ZOOM = 15;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        setContentView(R.layout.map);
-        mapView = (MapView) findViewById(R.id.mapview);
-    	mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setBuiltInZoomControls(true);
-        mapController = mapView.getController();
-        mapController.setZoom(15);
-        GeoPoint point2 = new GeoPoint(51496994, -134733);
-        mapController.setCenter(point2);
-		*/
         
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
+      	      new IntentFilter("dbReady"));
     }
    
     @Override
@@ -166,12 +169,25 @@ public class OpenStreetMapFragment extends Fragment {
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
 				Log.d("Zoom:",String.valueOf(arg0.getZoomLevel()));
-				if(arg0.getZoomLevel() > OpenStreetMapFragment.PINS_AT_LEVEL){
-					if(!mapView.getOverlays().contains(poiOverlay))
-						mapView.getOverlays().add(poiOverlay);
-				} else{
-					if(mapView.getOverlays().contains(poiOverlay))
-						mapView.getOverlays().remove(poiOverlay);
+				if(FragmentTabsPager.app.dbReady && FragmentTabsPager.app.embargoClear){
+					if(poiOverlay != null){
+						if(arg0.getZoomLevel() > OpenStreetMapFragment.PINS_AT_ZOOM){
+							if(!mapView.getOverlays().contains(poiOverlay))
+								mapView.getOverlays().add(poiOverlay);
+						} else{
+							if(mapView.getOverlays().contains(poiOverlay))
+								mapView.getOverlays().remove(poiOverlay);
+						}
+					}
+					return false;
+				}
+				// If embargoed, limit zoom level
+				else if(!FragmentTabsPager.app.embargoClear){
+					if(arg0.getZoomLevel() <= EMBARGO_MAX_ZOOM){
+						return false;
+					}
+					else
+						return true;
 				}
 				return false;
 			}
@@ -187,45 +203,7 @@ public class OpenStreetMapFragment extends Fragment {
 		//ItemizedIconOverlay<OverlayItem> itemOverlay = new ItemizedIconOverlay<OverlayItem>(generateOverlayItems(),
         //poiOverlay = new ItemizedOverlayWithBubble<OverlayItem>(getActivity(), generateOverlayItems(), mapView);
         
-        poiOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
-		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                        @Override
-                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        	
-                        	if(mapOverlayShowing == false){
-                        		activePoi = index;
-	                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
-	               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
-	               			 	Log.d("itemClick",item.getTitle() + " " + item.mDescription);
-	               			 	((TextView) popup.findViewById(R.id.popup_title)).setText(item.getTitle());
-	               			 	
-	                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.MATCH_PARENT,100, true);
-	                        	pw.setOnDismissListener(new OnDismissListener(){
-									@Override
-									public void onDismiss() {
-										mapOverlayShowing = false;
-										poiOverlay.getItem(activePoi).setMarker(getResources().getDrawable(R.drawable.red_pin));
-										
-									}
-	                        	});
-
-	                        	item.setMarker(getResources().getDrawable(R.drawable.blue_pin));
-	                        	pw.setFocusable(true);
-	                        	pw.setOutsideTouchable(true);
-	            	        	pw.setBackgroundDrawable(new BitmapDrawable());
-	            	        	//pw.
-	            	        	//pw.showAsDropDown(OpenStreetMapFragment.container);
-	            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.BOTTOM, 0, 0);
-	            	        	mapOverlayShowing = true;
-                        	}
-                                return false; // We 'handled' this event.
-                        }
-
-                        @Override
-                        public boolean onItemLongPress(final int index, final OverlayItem item) {
-                                return false;
-                        }
-                }, mResourceProxy);
+        
 		
 		
     	
@@ -302,4 +280,76 @@ public class OpenStreetMapFragment extends Fragment {
 	    }
 		
 	}
+    
+    private BroadcastReceiver dbReadyReceiver = new BroadcastReceiver() {
+  	  @Override
+  	  public void onReceive(Context context, Intent intent) {
+  	    // 1 -- success, 0 -- error, -1 no data
+  	    int status = intent.getIntExtra("status", -1);
+  	    if(status == 1){
+  	    	
+  	    }
+  	  }
+  	};
+  	
+  	@Override
+	public void onDestroy(){
+  		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(dbReadyReceiver);
+  		super.onDestroy();
+  	}
+  	
+  	public void setPoiLayer(){
+  		poiOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
+  				new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+  		                        @Override
+  		                        public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+  		                        	
+  		                        	if(mapOverlayShowing == false){
+  		                        		activePoi = index;
+  			                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
+  			               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
+  			               			 	Log.d("itemClick",item.getTitle() + " " + item.mDescription);
+  			               			 	((TextView) popup.findViewById(R.id.popup_title)).setText(item.getTitle());
+  			               			 	popup.setTag(R.id.list_item_related_model, item.mDescription);
+  			               			 	popup.setOnClickListener(new OnClickListener(){
+
+  											@Override
+  											public void onClick(View v) {
+  												pw.dismiss();
+  												//FragmentTabsPager.mViewPager.setCurrentItem(2);
+  												String camp_id = v.getTag(R.id.list_item_related_model).toString();
+  												CampFragment.CursorLoaderListFragment.showCampPopup(OpenStreetMapFragment.container, camp_id);
+  												
+  											}
+  			               			 		
+  			               			 	});
+  			               			 	
+  			                        	pw = new PopupWindow(popup,LayoutParams.MATCH_PARENT,100, true);
+  			                        	pw.setOnDismissListener(new OnDismissListener(){
+  											@Override
+  											public void onDismiss() {
+  												mapOverlayShowing = false;
+  												poiOverlay.getItem(activePoi).setMarker(getResources().getDrawable(R.drawable.red_pin));
+  												
+  											}
+  			                        	});
+
+  			                        	item.setMarker(getResources().getDrawable(R.drawable.blue_pin));
+  			                        	pw.setFocusable(true);
+  			                        	//pw.setOutsideTouchable(true);
+  			            	        	pw.setBackgroundDrawable(new BitmapDrawable());
+  			            	        	//pw.
+  			            	        	//pw.showAsDropDown(OpenStreetMapFragment.container);
+  			            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.BOTTOM, 0, 0);
+  			            	        	mapOverlayShowing = true;
+  		                        	}
+  		                                return false; // We 'handled' this event.
+  		                        }
+
+  		                        @Override
+  		                        public boolean onItemLongPress(final int index, final OverlayItem item) {
+  		                                return false;
+  		                        }
+  		                }, mResourceProxy);
+  	}
 }   

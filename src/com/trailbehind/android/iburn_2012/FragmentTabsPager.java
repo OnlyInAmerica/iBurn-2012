@@ -40,7 +40,7 @@ import com.trailbehind.android.iburn_2012.data.DataUtils;
  */
 public class FragmentTabsPager extends FragmentActivity {
     TabHost mTabHost;
-    ViewPager  mViewPager;
+    public static ViewPager  mViewPager;
     TabsAdapter mTabsAdapter;
     
     public static iBurnApplication app;
@@ -65,7 +65,7 @@ public class FragmentTabsPager extends FragmentActivity {
         mTabHost.setup();
 
         mViewPager = (ViewPager)findViewById(R.id.pager);
-
+        
         mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 
         mTabsAdapter.addTab(mTabHost.newTabSpec("map").setIndicator("Map"),

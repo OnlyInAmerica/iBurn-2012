@@ -68,7 +68,7 @@ import android.widget.TextView;
  */
 @SuppressWarnings("all")
 public class CampFragment extends FragmentActivity {
-	private static Context c;
+	public static Context c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +202,8 @@ public class CampFragment extends FragmentActivity {
         public void onListItemClick (ListView l, View v, int position, long id){
         	
         	String camp_id = v.getTag(R.id.list_item_related_model).toString();
+        	showCampPopup(listView, camp_id);
+        	/*
         	Cursor result = getActivity().getContentResolver().query((PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build()), 
         			new String[] {CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, 
         						  CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, 
@@ -262,7 +264,7 @@ public class CampFragment extends FragmentActivity {
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);
-        	}
+        	}*/
         }
 
         public void onLoaderReset(Loader<Cursor> loader) {
@@ -270,6 +272,74 @@ public class CampFragment extends FragmentActivity {
             // above is about to be closed.  We need to make sure we are no
             // longer using it.
             mAdapter.swapCursor(null);
+        }
+        
+        
+        public static void showCampPopup(View parent, String camp_id){
+        	
+        	Cursor result = FragmentTabsPager.app.getContentResolver().query((PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build()), 
+        			new String[] {CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, 
+        						  CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, 
+        						  CampTable.COLUMN_LOCATION, CampTable.COLUMN_CONTACT,
+        						  CampTable.COLUMN_HOMETOWN, CampTable.COLUMN_FAVORITE},
+        			null, 
+        			null, 
+        			null);
+        	if(result.moveToFirst()){
+        		
+        	}
+        		LayoutInflater layoutInflater = (LayoutInflater)FragmentTabsPager.app.getSystemService(FragmentTabsPager.app.LAYOUT_INFLATER_SERVICE); 
+   			 	View popup = layoutInflater.inflate(R.layout.popup, null); 
+        		
+	        	((TextView) popup.findViewById(R.id.popup_title)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_NAME)));
+
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_CONTACT))){
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_CONTACT)));
+	        		((TextView) popup.findViewById(R.id.popup_contact)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_HOMETOWN))){
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_HOMETOWN)));
+	        		((TextView) popup.findViewById(R.id.popup_hometown)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_DESCRIPTION))){
+	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
+	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
+	        	}
+	        	View favoriteBtn = popup.findViewById(R.id.favorite_button);
+	        	int isFavorite = result.getInt(result.getColumnIndex(CampTable.COLUMN_FAVORITE));
+	        	if(isFavorite == 1)
+	        		((ImageView)favoriteBtn).setImageResource(android.R.drawable.star_big_on);
+	        	else
+	        		((ImageView)favoriteBtn).setImageResource(android.R.drawable.star_big_off);
+	        	favoriteBtn.setTag(R.id.list_item_related_model, camp_id);
+	        	favoriteBtn.setTag(R.id.favorite_button_state, isFavorite);
+	        	
+	        	favoriteBtn.setOnClickListener(new OnClickListener(){
+
+	    			@Override
+	    			public void onClick(View v) {
+	    				String camp_id = v.getTag(R.id.list_item_related_model).toString();
+	    				ContentValues values = new ContentValues();
+	    				if((Integer)v.getTag(R.id.favorite_button_state) == 0){
+	    					values.put(CampTable.COLUMN_FAVORITE, 1);
+	    					v.setTag(R.id.favorite_button_state, 1);
+	    					((ImageView)v).setImageResource(android.R.drawable.star_big_on);
+	    				}
+	    				else if((Integer)v.getTag(R.id.favorite_button_state) == 1){
+	    					values.put(CampTable.COLUMN_FAVORITE, 0);
+	    					v.setTag(R.id.favorite_button_state, 0);
+	    					((ImageView)v).setImageResource(android.R.drawable.star_big_off);
+	    				}
+	    				int result = FragmentTabsPager.app.getContentResolver().update(PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build(), 
+	    						values, null, null);
+	    				
+	    			}
+	    			 
+	    		 });
+	        	
+	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        	pw.setBackgroundDrawable(new BitmapDrawable());
+	        	pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }
     }
 

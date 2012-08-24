@@ -14,11 +14,14 @@ import java.io.InputStreamReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.trailbehind.android.iburn_2012.CampFragment;
 import com.trailbehind.android.iburn_2012.FragmentTabsPager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class DataUtils {
@@ -28,10 +31,10 @@ public class DataUtils {
 	private static final String ART_DATA_PATH = "playa-json/art_data.json";
 	// Relative to getFilesDir() (/data/data/app.namespace/)
 	
-	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Void>{
+	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Integer>{
 		// This method is executed in a separate thread
 		@Override
-		protected Void doInBackground(Void... input) {
+		protected Integer doInBackground(Void... input) {
 			if(FragmentTabsPager.app == null){
 				Log.d("ImportJsonToCampTable","FragmentTabsPager Context not set");
 				return null;
@@ -72,21 +75,32 @@ public class DataUtils {
 				Log.d("ImportJsonToCampTable","Camps sent to database");
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();
+				return 0;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return 0;
 			}
-			return null;
+			return 1;
 		}
 		
 		@Override
-	    protected void onPostExecute(Void result) {
-
+	    protected void onPostExecute(Integer result) {
+			sendSuccessMessage(result);
 			super.onPostExecute(result);
 
 	    }
 		
+		private void sendSuccessMessage(int result) { // 0 = service stopped , 1 = service started, 2 = refresh view with call to bartApiRequest(), 3 = 
+		  	  int status = 3; // hardcode status for calling TheActivity.parseBart
+			  //Log.d("BART_Response", result);
+		  	  Intent intent = new Intent("dbReady");
+		  	  // You can also include some extra data.
+		  	  intent.putExtra("status", result);
+		  	  LocalBroadcastManager.getInstance(CampFragment.c).sendBroadcast(intent);
+		  	}
+		
 	}
-	
+
 	public static String inputStreamToChar(InputStream is) throws IOException{
 		BufferedReader r = new BufferedReader(new InputStreamReader(is));
 		StringBuilder total = new StringBuilder();
