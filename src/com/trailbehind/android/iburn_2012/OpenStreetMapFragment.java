@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.osmdroid.ResourceProxy;
+import org.osmdroid.bonuspack.overlays.ItemizedOverlayWithBubble;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
@@ -87,6 +88,7 @@ public class OpenStreetMapFragment extends Fragment {
 	private ResourceProxy mResourceProxy;
 	
 	static ItemizedOverlayWithFocus poiOverlay;
+	//static ItemizedOverlayWithBubble poiOverlay;
     
     // Map bounds
     private final GeoPoint northEast = new GeoPoint(40802822, -119172673);
@@ -172,10 +174,13 @@ public class OpenStreetMapFragment extends Fragment {
     	mResourceProxy = new ResourceProxyImpl(FragmentTabsPager.app);
         mLocationOverlay = new MyLocationOverlay(FragmentTabsPager.app, mapView,
 				mResourceProxy);
-		mapView.getOverlays().add(this.mLocationOverlay);
+        mLocationOverlay.enableCompass();
+		
 		//mapView.setMultiTouchControls(true);
 		
 		//ItemizedIconOverlay<OverlayItem> itemOverlay = new ItemizedIconOverlay<OverlayItem>(generateOverlayItems(),
+        //poiOverlay = new ItemizedOverlayWithBubble<OverlayItem>(getActivity(), generateOverlayItems(), mapView);
+        
         poiOverlay = new ItemizedOverlayWithFocus<OverlayItem>(generateOverlayItems(),   
 		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
@@ -206,14 +211,14 @@ public class OpenStreetMapFragment extends Fragment {
                                 return false;
                         }
                 }, mResourceProxy);
-		
+			
 		
     	
     	//mapView = (MapView) view.findViewById(R.id.mapview);
     	BoundingBoxE6 bounds = new BoundingBoxE6(northEast, southWest);
     	mapView.setScrollableAreaLimit(bounds);
     	mapView.getOverlays().add(MyTilesOverlay);
-    	
+    	mapView.getOverlays().add(this.mLocationOverlay);
     	//mapView.setTileSource(tileSource);
         mapView.setBuiltInZoomControls(true);
         mapView.setUseDataConnection(false);

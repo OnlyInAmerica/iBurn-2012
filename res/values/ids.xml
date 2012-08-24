@@ -10,4 +10,10 @@
     <!--  Menu Items -->
     <item name="menu_search" type="id"/>
     <item name="menu_favorite" type="id"/>
+    
+    <!--  Map layers -->
+    
+    <item name="tiles" type="integer">0</item>
+    <item name="pois" type="integer">1</item>
+    <item name="location" type="integer">2</item>
 </resources>

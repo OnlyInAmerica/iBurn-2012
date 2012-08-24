@@ -63,6 +63,13 @@ public final class R {
         public static final int simple_fragment=0x7f040009;
         public static final int text=0x7f04000d;
     }
+    public static final class integer {
+        public static final int location=0x7f050002;
+        public static final int pois=0x7f050001;
+        /**   Map layers 
+         */
+        public static final int tiles=0x7f050000;
+    }
     public static final class layout {
         public static final int camp_listview_item=0x7f030000;
         public static final int fragment_stack=0x7f030001;
@@ -76,15 +83,15 @@ public final class R {
         public static final int popup=0x7f030009;
     }
     public static final class string {
-        public static final int app_name=0x7f050000;
-        public static final int prefs_followlocation=0x7f050006;
-        public static final int prefs_name=0x7f050001;
-        public static final int prefs_scrollx=0x7f050002;
-        public static final int prefs_scrolly=0x7f050003;
-        public static final int prefs_showlocation=0x7f050005;
-        public static final int prefs_zoomlevel=0x7f050004;
+        public static final int app_name=0x7f060000;
+        public static final int prefs_followlocation=0x7f060006;
+        public static final int prefs_name=0x7f060001;
+        public static final int prefs_scrollx=0x7f060002;
+        public static final int prefs_scrolly=0x7f060003;
+        public static final int prefs_showlocation=0x7f060005;
+        public static final int prefs_zoomlevel=0x7f060004;
     }
     public static final class style {
-        public static final int AppTheme=0x7f060000;
+        public static final int AppTheme=0x7f070000;
     }
 }
