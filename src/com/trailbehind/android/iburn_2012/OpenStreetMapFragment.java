@@ -28,7 +28,9 @@ import org.osmdroid.views.overlay.TilesOverlay;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.trailbehind.android.iburn_2012.DeviceLocation.LocationResult;
 import com.trailbehind.android.iburn_2012.data.CampTable;
+import com.trailbehind.android.iburn_2012.data.DataUtils;
 import com.trailbehind.android.iburn_2012.data.JSONDeserializers;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
@@ -42,6 +44,7 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -103,6 +106,12 @@ public class OpenStreetMapFragment extends Fragment {
 	private ResourceProxy mResourceProxy;
 	
 	static ItemizedOverlayWithFocus poiOverlay;
+	
+	// Location 
+	Location currentLocation;
+	double currentLat;
+	double currentLon;
+	boolean hasLocation = false;
 		
 	//static ItemizedOverlayWithBubble poiOverlay;
 
@@ -226,13 +235,17 @@ public class OpenStreetMapFragment extends Fragment {
     @Override
     public void onResume(){
     	super.onResume();
-    	mLocationOverlay.enableMyLocation();
+    	if(!FragmentTabsPager.app.embargoClear)
+    		getDeviceLocation();
+    	else
+    		mLocationOverlay.enableMyLocation();
     }
     
     @Override
     public void onPause(){
     	super.onPause();
-    	mLocationOverlay.disableMyLocation();
+    	if(FragmentTabsPager.app.embargoClear)
+    		mLocationOverlay.disableMyLocation();
     }
     
  
@@ -352,4 +365,35 @@ public class OpenStreetMapFragment extends Fragment {
   		                        }
   		                }, mResourceProxy);
   	}
+  	
+  	// Registers with LocationService to update appropriate class variables
+ 	// with LocationResult when it's available
+ 	private void getDeviceLocation(){
+ 		DeviceLocation deviceLocation = new DeviceLocation();
+         LocationResult locationResult = new LocationResult(){
+             @Override
+             public void gotLocation(final Location location){
+                 //Got the location!
+                 
+                 currentLocation = location;
+                 if (location != null) {
+                     currentLat = location.getLatitude();
+                     currentLon = location.getLongitude();
+                     double distance = DataUtils.distanceFromTheMan(currentLat, currentLon);
+                     Log.d("RefreshLocation",String.valueOf(currentLat)+ " , " + String.valueOf(currentLon)+": Distance fom man: " + String.valueOf(distance));
+                     if(distance < DataUtils.MAN_DISTANCE_THRESHOLD){
+                    	 sendEmbargoClearMessage(1); // success
+                     }
+                 }
+                 hasLocation = true;
+                 };
+             };
+        deviceLocation.getLocation(getActivity(), locationResult);
+ 	}
+ 	
+ 	private void sendEmbargoClearMessage(int status) { 
+	  	  Intent intent = new Intent("embargoClear");
+	  	  intent.putExtra("status", status);
+	  	  LocalBroadcastManager.getInstance(CampFragment.c).sendBroadcast(intent);
+	  	}
 }   

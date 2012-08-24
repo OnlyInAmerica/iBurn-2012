@@ -2,6 +2,9 @@ package com.trailbehind.android.iburn_2012;
 
 import java.util.ArrayList;
 
+import com.trailbehind.android.iburn_2012.DeviceLocation.LocationResult;
+
+
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -10,12 +13,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 public class iBurnApplication extends Application {
 	
 	// If database ready signal received AND data embargo lifted
 	public static boolean dbReady = false;
 	public static boolean embargoClear = false;
+
 	
 	
 	@Override
@@ -45,6 +50,7 @@ public class iBurnApplication extends Application {
 	  	    	dbReady = true;
 	  	    }
 	  	  }
-	  	};
+	 };
+	 
 
 }

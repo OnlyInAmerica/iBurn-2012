@@ -31,6 +31,12 @@ public class DataUtils {
 	private static final String ART_DATA_PATH = "playa-json/art_data.json";
 	// Relative to getFilesDir() (/data/data/app.namespace/)
 	
+	//Location of THE MAN
+	private static final double MAN_LAT = 40.782818;
+	private static final double MAN_LON = -119.209042;
+	
+	public static final double MAN_DISTANCE_THRESHOLD = 3; // miles
+	
 	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Integer>{
 		// This method is executed in a separate thread
 		@Override
@@ -109,6 +115,26 @@ public class DataUtils {
 		    total.append(line);
 		}
 		return total.toString();
+	}
+	
+	public static double distanceFromTheMan(double lat, double lon){
+		//40.782818, -119.209042
+
+		double theta = lon - MAN_LON;
+		double dist = Math.sin(deg2rad(lat)) * Math.sin(deg2rad(MAN_LAT)) + Math.cos(deg2rad(lat)) * Math.cos(deg2rad(MAN_LAT)) * Math.cos(deg2rad(theta));
+		dist = Math.acos(dist);
+		dist = rad2deg(dist);
+		dist = dist * 60 * 1.1515;
+		return dist; // miles
+	}
+	
+	static private double deg2rad(double deg) {
+		  return (deg * Math.PI / 180.0);
+	}
+
+	
+	static private double rad2deg(double rad) {
+		  return (rad * 180 / Math.PI);
 	}
 	
 
