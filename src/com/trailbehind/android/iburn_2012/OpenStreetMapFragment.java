@@ -43,6 +43,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
@@ -76,6 +77,8 @@ public class OpenStreetMapFragment extends Fragment {
     
     public static View container;
     //private MapView mapView;
+    
+    public static boolean mapOverlayShowing = false;
     
     private MyLocationOverlay mLocationOverlay;
 	private ResourceProxy mResourceProxy;
@@ -147,12 +150,24 @@ public class OpenStreetMapFragment extends Fragment {
 		new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
-               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
-                        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
-            	        	pw.setBackgroundDrawable(new BitmapDrawable());
-            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.CENTER, 0, 0);
-            	        	
+                        	if(mapOverlayShowing == false){
+	                        	LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE); 
+	               			 	View popup = layoutInflater.inflate(R.layout.map_item_popup, null); 
+	                        	PopupWindow pw = new PopupWindow(popup,200,200, true);
+	                        	pw.setOnDismissListener(new OnDismissListener(){
+									@Override
+									public void onDismiss() {
+										mapOverlayShowing = false;
+										
+									}
+	                        	});
+	                        	pw.setFocusable(true);
+	                        	pw.setOutsideTouchable(true);
+	            	        	pw.setBackgroundDrawable(new BitmapDrawable());
+	            	        	//pw.
+	            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.CENTER, 0, 0);
+	            	        	mapOverlayShowing = true;
+                        	}
                                 return false; // We 'handled' this event.
                         }
 
