@@ -16,6 +16,8 @@
 
 package com.trailbehind.android.iburn_2012;
 
+import org.osmdroid.util.GeoPoint;
+
 import com.trailbehind.android.iburn_2012.ArtFragment.CursorLoaderListFragment;
 import com.trailbehind.android.iburn_2012.data.ArtTable;
 import com.trailbehind.android.iburn_2012.data.CampTable;
@@ -52,7 +54,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MotionEvent;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.View;
 import android.view.ViewGroup;
@@ -304,6 +308,29 @@ public class CampFragment extends FragmentActivity {
 	        	if(!result.isNull(result.getColumnIndex(CampTable.COLUMN_DESCRIPTION))){
 	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
 	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
+	        	}
+	        	if(FragmentTabsPager.app.embargoClear && !result.isNull(result.getColumnIndex(CampTable.COLUMN_LATITUDE))){
+	        		TextView location = ((TextView) popup.findViewById(R.id.popup_location));
+	        		location.setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_LATITUDE)) + " , " + result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_LONGITUDE)));
+	        		location.setVisibility(View.VISIBLE);
+	        		//location.setFocusableInTouchMode(true);
+	        		GeoPoint locationPoint = new GeoPoint(result.getDouble(result.getColumnIndexOrThrow(CampTable.COLUMN_LATITUDE)), 
+	        										 result.getDouble(result.getColumnIndexOrThrow(CampTable.COLUMN_LONGITUDE)));
+	        		location.setTag(R.id.view_location_link, locationPoint);
+	        		location.setOnTouchListener(new OnTouchListener(){
+
+						@Override
+						public boolean onTouch(View v, MotionEvent me) {
+							if(me.getAction() == MotionEvent.ACTION_DOWN){
+								Log.d("Popup","Click");
+								FragmentTabsPager.mViewPager.setCurrentItem(0);
+								OpenStreetMapFragment.centerMap((GeoPoint)v.getTag(R.id.view_location_link));
+								return true;
+							}
+							return false;
+						}
+	        			
+	        		});
 	        	}
 	        	View favoriteBtn = popup.findViewById(R.id.favorite_button);
 	        	int isFavorite = result.getInt(result.getColumnIndex(CampTable.COLUMN_FAVORITE));

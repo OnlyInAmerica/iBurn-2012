@@ -17,6 +17,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager.LayoutParams;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -67,6 +68,51 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
          // Place an action bar item for searching.
          MenuItem searchItem = menu.add(Menu.NONE, R.id.menu_search, Menu.NONE, "Search");
          searchItem.setIcon(android.R.drawable.ic_menu_search);
+         if(!FragmentTabsPager.app.embargoClear){
+        	 MenuItem unlockItem = menu.add(Menu.NONE, R.id.menu_unlock, Menu.NONE, "Unlock");
+        	 unlockItem.setIcon(R.drawable.unlock);
+        	 unlockItem.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					if(!FragmentTabsPager.app.embargoClear){
+						AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+						alert.setTitle("Enter Unlock Password");
+
+						// Set an EditText view to get user input 
+						final EditText input = new EditText(getActivity());
+						input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+						alert.setView(input);
+						alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								String value = input.getText().toString();
+							  	if(value == FragmentTabsPager.app.unlockPassword){
+							  		FragmentTabsPager.app.embargoClear = true;
+							  		restartLoader();
+							  	}
+							  	else{
+								  	dialog.cancel();
+								  	AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+									alert.setTitle("Invalid Password");
+									alert.show();
+							  	}
+							  }
+							});
+
+							alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+							  public void onClick(DialogInterface dialog, int whichButton) {
+							  }
+							});
+							
+							alert.show();
+						//FragmentTabsPager.app.embargoClear = true;
+					}
+					return false;
+				}
+        		 
+        	 });
+         }
          MenuItem favItem = menu.add(Menu.NONE, R.id.menu_favorite, Menu.NONE, "Favorites");
          MenuItemCompat.setShowAsAction(favItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
          favItem.setIcon(android.R.drawable.star_big_off);
@@ -191,6 +237,10 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 			MenuItem item = menu.findItem(R.id.menu_favorite);
      		item.setIcon(android.R.drawable.star_big_on);
 		}
+     	if(FragmentTabsPager.app.embargoClear && menu.findItem(R.id.menu_unlock) != null){
+     		menu.removeItem(R.id.menu_unlock);
+     		
+     	}
      
      }
 	 

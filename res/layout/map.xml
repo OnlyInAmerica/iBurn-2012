@@ -1,8 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map_placeholder"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/map_placeholder_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/blurry_playa" />
+
+        <TextView
+            android:id="@+id/map_placeholder_text"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:ellipsize="marquee"
+            android:gravity="center"
+            android:padding="2dp"
+            android:shadowColor="#000000"
+            android:shadowDx="5.0"
+            android:shadowDy="5.0"
+            android:shadowRadius="5.0"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/map_sub_text"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/map_placeholder_text"
+            android:background="@android:color/transparent"
+            android:ellipsize="marquee"
+            android:paddingTop="10dp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:shadowColor="#000000"
+            android:shadowDx="5.0"
+            android:shadowDy="5.0"
+            android:shadowRadius="5.0"
+            android:text="App will activate when you reach the playa."
+            android:textColor="#FFFFFF"
+            android:textSize="18dp" />
+    </RelativeLayout>
 
     <org.osmdroid.views.BoundedMapView
         android:id="@+id/mapview"

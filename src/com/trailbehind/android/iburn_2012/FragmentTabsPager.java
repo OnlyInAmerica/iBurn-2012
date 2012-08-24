@@ -93,13 +93,13 @@ public class FragmentTabsPager extends FragmentActivity {
         editor = prefs.edit();
         
         //new DataUtils.ImportJsonToCampTable().execute();
-        /*
+        
         if(prefs.getBoolean("first_timer", true)){
         	new DataUtils.ImportJsonToCampTable().execute();
         	editor.putBoolean("first_timer", false);
 	        editor.commit();
         }
-        */
+        
         
     }
 

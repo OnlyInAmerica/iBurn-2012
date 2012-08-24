@@ -20,6 +20,8 @@ public class iBurnApplication extends Application {
 	// If database ready signal received AND data embargo lifted
 	public static boolean dbReady = false;
 	public static boolean embargoClear = false;
+	
+	public static String unlockPassword = "venus";
 
 	
 	

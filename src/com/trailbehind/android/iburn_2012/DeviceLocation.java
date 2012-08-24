@@ -41,13 +41,18 @@ public class DeviceLocation {
         timer1.schedule(new GetLastLocation(), 20000);
         return true;
     }
+    
+    public void stopListening(){
+    	lm.removeUpdates(locationListenerGps);
+    	lm.removeUpdates(locationListenerNetwork);
+    }
 
     LocationListener locationListenerGps = new LocationListener() {
         public void onLocationChanged(Location location) {
             timer1.cancel();
             locationResult.gotLocation(location);
-            lm.removeUpdates(this);
-            lm.removeUpdates(locationListenerNetwork);
+            //lm.removeUpdates(this);
+            //lm.removeUpdates(locationListenerNetwork);
         }
         public void onProviderDisabled(String provider) {}
         public void onProviderEnabled(String provider) {}
@@ -58,8 +63,8 @@ public class DeviceLocation {
         public void onLocationChanged(Location location) {
             timer1.cancel();
             locationResult.gotLocation(location);
-            lm.removeUpdates(this);
-            lm.removeUpdates(locationListenerGps);
+            //lm.removeUpdates(this);
+            //lm.removeUpdates(locationListenerGps);
         }
         public void onProviderDisabled(String provider) {}
         public void onProviderEnabled(String provider) {}
@@ -69,8 +74,8 @@ public class DeviceLocation {
     class GetLastLocation extends TimerTask {
         @Override
         public void run() {
-             lm.removeUpdates(locationListenerGps);
-             lm.removeUpdates(locationListenerNetwork);
+             //lm.removeUpdates(locationListenerGps);
+             //lm.removeUpdates(locationListenerNetwork);
 
              Location net_loc=null, gps_loc=null;
              if(gps_enabled)

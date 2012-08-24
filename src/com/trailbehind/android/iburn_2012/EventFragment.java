@@ -230,7 +230,7 @@ public class EventFragment extends FragmentActivity {
 	        		((TextView) popup.findViewById(R.id.popup_contact)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_HOST_CAMP_NAME)));
 	        		((TextView) popup.findViewById(R.id.popup_contact)).setVisibility(View.VISIBLE);
 	        	}
-	        	if(!result.isNull(result.getColumnIndex(EventTable.COLUMN_LOCATION))){
+	        	if(FragmentTabsPager.app.embargoClear && !result.isNull(result.getColumnIndex(EventTable.COLUMN_LOCATION))){
 	        		((TextView) popup.findViewById(R.id.popup_hometown)).setText(result.getString(result.getColumnIndexOrThrow(EventTable.COLUMN_LOCATION)));
 	        		((TextView) popup.findViewById(R.id.popup_hometown)).setVisibility(View.VISIBLE);
 	        	}

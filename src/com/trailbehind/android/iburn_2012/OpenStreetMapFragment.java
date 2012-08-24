@@ -46,6 +46,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -87,10 +88,11 @@ import android.widget.Toast;
 
 public class OpenStreetMapFragment extends Fragment {
     /** Called when the activity is first created. */
-    private MapController mapController;
+    public static MapController mapController;
     static BoundedMapView mapView;
     
-    public static View container;
+      public static View container;
+    //public static View mapView;
     //private MapView mapView;
     
     // prevent more than one poi touch event being dispatched at once
@@ -107,10 +109,13 @@ public class OpenStreetMapFragment extends Fragment {
 	
 	static ItemizedOverlayWithFocus poiOverlay;
 	
+	public DeviceLocation deviceLocation;
+	
 	// Location 
 	Location currentLocation;
 	double currentLat;
 	double currentLon;
+	double distance; // from man
 	boolean hasLocation = false;
 		
 	//static ItemizedOverlayWithBubble poiOverlay;
@@ -165,7 +170,7 @@ public class OpenStreetMapFragment extends Fragment {
 
 		//MapTileAssetProvider mtap = new MapTileAssetProvider(assets, tileSource, 0);
     	View view = inflater.inflate(R.layout.map, null);
-    	this.container = (View) view.findViewById(R.id.mapview);
+    	this.container = (View) view.findViewById(R.id.container);
     	mapView = (BoundedMapView) view.findViewById(R.id.mapview);
     	mapView.setMapListener(new MapListener(){
 
@@ -205,8 +210,11 @@ public class OpenStreetMapFragment extends Fragment {
     	mResourceProxy = new ResourceProxyImpl(FragmentTabsPager.app);
         mLocationOverlay = new MyLocationOverlay(FragmentTabsPager.app, mapView,
 				mResourceProxy);
-        mLocationOverlay.enableCompass();
-		
+        if(Build.VERSION.SDK_INT < 11){
+        	// There seems to be an OPENGL issue with the compass rendering 
+        	// non-hardware accelerated views seem fine
+        	mLocationOverlay.enableCompass();
+        }
 		//mapView.setMultiTouchControls(true);
 		
 		//ItemizedIconOverlay<OverlayItem> itemOverlay = new ItemizedIconOverlay<OverlayItem>(generateOverlayItems(),
@@ -235,10 +243,24 @@ public class OpenStreetMapFragment extends Fragment {
     @Override
     public void onResume(){
     	super.onResume();
-    	if(!FragmentTabsPager.app.embargoClear)
+    	if(!FragmentTabsPager.app.embargoClear){
+    		Log.d("Embargo","NOT CLEAR");
+    		//Embargo NOT clear
     		getDeviceLocation();
-    	else
+    		getActivity().findViewById(R.id.map_placeholder).setVisibility(View.VISIBLE);
+    		if(distance != 0){
+    			double rounded_distance = ((int) ((distance * 10) + 0.5)) / 10;
+    			((TextView)getActivity().findViewById(R.id.map_placeholder_text)).setText("You are " + String.valueOf(rounded_distance) + " miles from the man.");
+    		}
+    		mapView.setVisibility(View.GONE);
+    	}
+    	else{
+    		//Embargo clear
+    		Log.d("Embargo","CLEAR");
     		mLocationOverlay.enableMyLocation();
+    		getActivity().findViewById(R.id.map_placeholder).setVisibility(View.GONE);
+    		mapView.setVisibility(View.VISIBLE);
+    	}
     }
     
     @Override
@@ -246,6 +268,9 @@ public class OpenStreetMapFragment extends Fragment {
     	super.onPause();
     	if(FragmentTabsPager.app.embargoClear)
     		mLocationOverlay.disableMyLocation();
+    	
+    	if(deviceLocation != null)
+    		deviceLocation.stopListening();
     }
     
  
@@ -331,7 +356,7 @@ public class OpenStreetMapFragment extends Fragment {
   												pw.dismiss();
   												//FragmentTabsPager.mViewPager.setCurrentItem(2);
   												String camp_id = v.getTag(R.id.list_item_related_model).toString();
-  												CampFragment.CursorLoaderListFragment.showCampPopup(OpenStreetMapFragment.container, camp_id);
+  												CampFragment.CursorLoaderListFragment.showCampPopup(OpenStreetMapFragment.mapView, camp_id);
   												
   											}
   			               			 		
@@ -353,7 +378,7 @@ public class OpenStreetMapFragment extends Fragment {
   			            	        	pw.setBackgroundDrawable(new BitmapDrawable());
   			            	        	//pw.
   			            	        	//pw.showAsDropDown(OpenStreetMapFragment.container);
-  			            	        	pw.showAtLocation(OpenStreetMapFragment.container, Gravity.BOTTOM, 0, 0);
+  			            	        	pw.showAtLocation(OpenStreetMapFragment.mapView, Gravity.BOTTOM, 0, 0);
   			            	        	mapOverlayShowing = true;
   		                        	}
   		                                return false; // We 'handled' this event.
@@ -369,7 +394,7 @@ public class OpenStreetMapFragment extends Fragment {
   	// Registers with LocationService to update appropriate class variables
  	// with LocationResult when it's available
  	private void getDeviceLocation(){
- 		DeviceLocation deviceLocation = new DeviceLocation();
+ 		 deviceLocation = new DeviceLocation();
          LocationResult locationResult = new LocationResult(){
              @Override
              public void gotLocation(final Location location){
@@ -379,11 +404,19 @@ public class OpenStreetMapFragment extends Fragment {
                  if (location != null) {
                      currentLat = location.getLatitude();
                      currentLon = location.getLongitude();
-                     double distance = DataUtils.distanceFromTheMan(currentLat, currentLon);
+                     distance = DataUtils.distanceFromTheMan(currentLat, currentLon);
                      Log.d("RefreshLocation",String.valueOf(currentLat)+ " , " + String.valueOf(currentLon)+": Distance fom man: " + String.valueOf(distance));
                      if(distance < DataUtils.MAN_DISTANCE_THRESHOLD){
                     	 sendEmbargoClearMessage(1); // success
+                    	 deviceLocation.stopListening();
                      }
+                     else{
+                    	 if(distance != 0){
+                 			double rounded_distance = ((int) ((distance * 10) + 0.5)) / 10;
+                 			((TextView)container.findViewById(R.id.map_placeholder_text)).setText("You are " + String.valueOf(rounded_distance) + " miles from the man.");
+                 		}
+                     }
+
                  }
                  hasLocation = true;
                  };
@@ -396,4 +429,9 @@ public class OpenStreetMapFragment extends Fragment {
 	  	  intent.putExtra("status", status);
 	  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
 	  	}
+ 	
+ 	public static void centerMap(GeoPoint point){
+ 		//mapController.animateTo(point);
+ 		mapController.zoomInFixing(point);
+ 	}
 }   

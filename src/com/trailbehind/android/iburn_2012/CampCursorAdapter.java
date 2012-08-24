@@ -38,7 +38,9 @@ public class CampCursorAdapter extends SimpleCursorAdapter {
         }
         //Log.d("bindView","yeah");
         view_cache.title.setText(cursor.getString(view_cache.title_col));
-        view_cache.sub.setText(cursor.getString(view_cache.sub_col));
+        if(FragmentTabsPager.app.embargoClear){
+        	view_cache.sub.setText(cursor.getString(view_cache.sub_col));
+        }
         //view_cache.thumbnail.setImageBitmap(BitmapFactory.decodeFile(cursor.getString(view_cache.thumbnail_col)));
         view.setTag(R.id.list_item_related_model, cursor.getInt(view_cache._id_col));
     }
