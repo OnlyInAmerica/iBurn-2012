@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.EditText;
@@ -42,6 +43,8 @@ import android.widget.TextView;
 public abstract class PlayaListFragmentBase extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 	// Search by name string
 	String mCurFilter;
+	// Limit display to favorites
+	boolean limitListToFavorites = false;
 
 	LinearLayout listContainer;
 	
@@ -62,12 +65,31 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 	
 	 @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
          // Place an action bar item for searching.
-         MenuItem item = menu.add("Search");
-         item.setIcon(android.R.drawable.ic_menu_search);
-         
+         MenuItem searchItem = menu.add(Menu.NONE, R.id.menu_search, Menu.NONE, "Search");
+         searchItem.setIcon(android.R.drawable.ic_menu_search);
+         MenuItem favItem = menu.add(Menu.NONE, R.id.menu_favorite, Menu.NONE, "Favorites");
+         MenuItemCompat.setShowAsAction(favItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+         favItem.setIcon(android.R.drawable.star_big_off);
+         favItem.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				if(!limitListToFavorites){
+					item.setIcon(android.R.drawable.star_big_on);
+					limitListToFavorites = true;
+					restartLoader();
+				} else {
+					item.setIcon(android.R.drawable.star_big_off);
+					limitListToFavorites = false;
+					restartLoader();
+				}
+				return false;
+			}
+        	 
+         });
          // Pre-Honeycomb, actionviews do not show!
          if(Build.VERSION.SDK_INT > 11){
-         	MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
+         	MenuItemCompat.setShowAsAction(searchItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS
                      | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 	            View searchView = SearchViewCompat.newSearchView(getActivity());
 	            if (searchView != null) {
@@ -93,12 +115,12 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 	                        return true;
 	                    }
 	                });
-	                MenuItemCompat.setActionView(item, searchView);
+	                MenuItemCompat.setActionView(searchItem, searchView);
 	            }
          }
          // PRE-HONEYCOMB Behavior
          else{
-         	item.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+        	 searchItem.setOnMenuItemClickListener(new OnMenuItemClickListener(){
 
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
@@ -164,6 +186,11 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
      	else if(!(mCurFilter != "" && mCurFilter != null) && menu.findItem(R.id.menu_show_all) != null){
      		menu.removeItem(R.id.menu_show_all);
      	}
+     	// Set favorite menu state on load
+     	if(limitListToFavorites){
+			MenuItem item = menu.findItem(R.id.menu_favorite);
+     		item.setIcon(android.R.drawable.star_big_on);
+		}
      
      }
 	 
@@ -183,5 +210,6 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 		return popupView;
 
 	}
+
 
 }

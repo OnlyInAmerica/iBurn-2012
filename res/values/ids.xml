@@ -4,4 +4,10 @@
     <!--  ListView -->
     <item name="list_item_cache" type="id"/>
     <item name="list_item_related_model" type="id"/>
+    
+    <item name="favorite_button_state" type="id"/>
+    
+    <!--  Menu Items -->
+    <item name="menu_search" type="id"/>
+    <item name="menu_favorite" type="id"/>
 </resources>

@@ -34,6 +34,7 @@ import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -51,10 +52,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -111,7 +114,6 @@ public class CampFragment extends FragmentActivity {
                     new int[] { android.R.id.text1}, 0);
             */
             mAdapter = new CampCursorAdapter(getActivity(), null);
-            setListAdapter(mAdapter);
 
             // Start out with a progress indicator.
             //setListShown(false);
@@ -119,6 +121,10 @@ public class CampFragment extends FragmentActivity {
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
             getLoaderManager().initLoader(0, null, this);
+            setListAdapter(mAdapter);
+            ListView lv = getListView();
+            lv.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+            lv.setFastScrollEnabled(true);
         }
 
         // These are the Camp rows that we will retrieve.
@@ -126,6 +132,7 @@ public class CampFragment extends FragmentActivity {
             CampTable.COLUMN_ID,
             CampTable.COLUMN_NAME,
             CampTable.COLUMN_LOCATION,
+            CampTable.COLUMN_FAVORITE
         };
 
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -142,6 +149,14 @@ public class CampFragment extends FragmentActivity {
                 baseUri = PlayaContentProvider.CAMP_URI;
                 ordering = CampTable.COLUMN_NAME + " ASC";
             }
+            
+            String selection = null;
+            String[] selectionArgs = null;
+            
+            if(limitListToFavorites){
+            	selection = ArtTable.COLUMN_FAVORITE + " = ?";
+            	selectionArgs = new String[]{"1"};
+            }
 			
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
@@ -153,7 +168,7 @@ public class CampFragment extends FragmentActivity {
                     CAMP_PROJECTION, select, null, CampTable.COLUMN_NAME + " ASC");
             */
             return new CursorLoader(getActivity(), baseUri,
-                    CAMP_PROJECTION, null, null,
+                    CAMP_PROJECTION, selection, selectionArgs,
                     ordering);
         }
 
@@ -168,7 +183,10 @@ public class CampFragment extends FragmentActivity {
             	emptyText.setText("These aren't the camps you're looking for...");
             }
             else if(data.getCount() == 0)
-            	emptyText.setText("No Camps Found");
+            	if(limitListToFavorites)
+            		emptyText.setText("Select a camp, favorite it and see it here.");
+            	else
+            		emptyText.setText("No Camps Found");
             else
             	emptyText.setVisibility(View.GONE);
             // The list should now be shown.
@@ -188,7 +206,7 @@ public class CampFragment extends FragmentActivity {
         			new String[] {CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, 
         						  CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, 
         						  CampTable.COLUMN_LOCATION, CampTable.COLUMN_CONTACT,
-        						  CampTable.COLUMN_HOMETOWN},
+        						  CampTable.COLUMN_HOMETOWN, CampTable.COLUMN_FAVORITE},
         			null, 
         			null, 
         			null);
@@ -209,6 +227,38 @@ public class CampFragment extends FragmentActivity {
 	        		((TextView) popup.findViewById(R.id.popup_description)).setText(result.getString(result.getColumnIndexOrThrow(CampTable.COLUMN_DESCRIPTION)));
 	        		((TextView) popup.findViewById(R.id.popup_description)).setVisibility(View.VISIBLE);
 	        	}
+	        	View favoriteBtn = popup.findViewById(R.id.favorite_button);
+	        	int isFavorite = result.getInt(result.getColumnIndex(CampTable.COLUMN_FAVORITE));
+	        	if(isFavorite == 1)
+	        		((ImageView)favoriteBtn).setImageResource(android.R.drawable.star_big_on);
+	        	else
+	        		((ImageView)favoriteBtn).setImageResource(android.R.drawable.star_big_off);
+	        	favoriteBtn.setTag(R.id.list_item_related_model, camp_id);
+	        	favoriteBtn.setTag(R.id.favorite_button_state, isFavorite);
+	        	
+	        	favoriteBtn.setOnClickListener(new OnClickListener(){
+
+	    			@Override
+	    			public void onClick(View v) {
+	    				String camp_id = v.getTag(R.id.list_item_related_model).toString();
+	    				ContentValues values = new ContentValues();
+	    				if((Integer)v.getTag(R.id.favorite_button_state) == 0){
+	    					values.put(CampTable.COLUMN_FAVORITE, 1);
+	    					v.setTag(R.id.favorite_button_state, 1);
+	    					((ImageView)v).setImageResource(android.R.drawable.star_big_on);
+	    				}
+	    				else if((Integer)v.getTag(R.id.favorite_button_state) == 1){
+	    					values.put(CampTable.COLUMN_FAVORITE, 0);
+	    					v.setTag(R.id.favorite_button_state, 0);
+	    					((ImageView)v).setImageResource(android.R.drawable.star_big_off);
+	    				}
+	    				int result = getActivity().getContentResolver().update(PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build(), 
+	    						values, null, null);
+	    				
+	    			}
+	    			 
+	    		 });
+	        	
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);

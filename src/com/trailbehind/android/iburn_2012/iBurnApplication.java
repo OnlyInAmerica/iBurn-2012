@@ -16,5 +16,9 @@ public class iBurnApplication extends Application {
 		}
 			return result;
 	}
+	
+	public int update(ContentValues values, Uri uri){
+		return getContentResolver().update(uri, values, null, null);
+	}
 
 }
