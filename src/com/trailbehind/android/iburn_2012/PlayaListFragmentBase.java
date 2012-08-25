@@ -87,8 +87,9 @@ public abstract class PlayaListFragmentBase extends ListFragment implements Load
 						alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {
 								String value = input.getText().toString();
-							  	if(value == FragmentTabsPager.app.unlockPassword){
-							  		FragmentTabsPager.app.embargoClear = true;
+							  	if(value.compareTo(FragmentTabsPager.app.unlockPassword)==0){
+							  		FragmentTabsPager.app.setEmbargoClear(true);
+							  		//FragmentTabsPager.app.embargoClear = true;
 							  		restartLoader();
 							  	}
 							  	else{

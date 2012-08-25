@@ -3,6 +3,7 @@ package com.trailbehind.android.iburn_2012;
 import java.util.ArrayList;
 
 import com.trailbehind.android.iburn_2012.DeviceLocation.LocationResult;
+import com.trailbehind.android.iburn_2012.data.DataUtils;
 
 
 import android.app.Application;
@@ -11,6 +12,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -22,13 +25,28 @@ public class iBurnApplication extends Application {
 	public static boolean embargoClear = false;
 	
 	public static String unlockPassword = "venus";
-
+	
+	private static SharedPreferences prefs;
+	private static SharedPreferences.Editor editor;
+	static Resources res;
 	
 	
 	@Override
 	public void onCreate(){
 		LocalBroadcastManager.getInstance(this).registerReceiver(dbReadyReceiver, new IntentFilter("dbReady"));
 		LocalBroadcastManager.getInstance(this).registerReceiver(embargoClearReceiver, new IntentFilter("embargoClear"));
+		
+		res = getResources();
+        prefs = getSharedPreferences("PREFS", 0);
+        
+    	embargoClear = prefs.getBoolean("embargoClear", false);
+
+	}
+
+	public static void setEmbargoClear(boolean value){
+        editor = prefs.edit();
+        editor.putBoolean("embargoClear", value);
+        embargoClear = value;
 	}
 	
 	public Uri contentValuesToTable(ArrayList<ContentValues> cv, Uri uri){
@@ -61,7 +79,7 @@ public class iBurnApplication extends Application {
 	  	    // 1 -- success, 0 -- error, -1 no data
 	  	    int status = intent.getIntExtra("status", -1);
 	  	    if(status == 1){
-	  	    	embargoClear = true;
+	  	    	setEmbargoClear(true);
 	  	    }
 	  	  }
 	 };
