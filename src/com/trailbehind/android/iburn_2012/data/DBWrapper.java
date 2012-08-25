@@ -9,6 +9,7 @@ import com.trailbehind.android.iburn_2012.FragmentTabsPager;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.AbstractWindowedCursor;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -16,6 +17,7 @@ import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
@@ -94,17 +96,26 @@ class DBWrapper extends SQLiteOpenHelper {
         	try {
  
     			copyDataBase();
- 
+ 				sendDbReadyMessage(1);
     		} catch (IOException e) {
  
         		throw new Error("Error copying database");
  
         	}
     	}
+    	// signal db copy complete
+    	
     	return openDataBase(true);
     }
     
    */
+    
+    private void sendDbReadyMessage(int result) { 
+	  	  Intent intent = new Intent("dbReady");
+	  	  intent.putExtra("status", result);
+	  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
+	}
+    
     public static ContentValues cursorRowToContentValues(Cursor cursor){
     	ContentValues values = new ContentValues();
     	

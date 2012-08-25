@@ -100,7 +100,7 @@ public class DataUtils {
 		  	  Intent intent = new Intent("dbReady");
 		  	  intent.putExtra("status", result);
 		  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
-		  	}
+		}
 		
 	}
 

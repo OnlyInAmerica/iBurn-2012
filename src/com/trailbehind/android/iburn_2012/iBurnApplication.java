@@ -40,13 +40,22 @@ public class iBurnApplication extends Application {
         prefs = getSharedPreferences("PREFS", 0);
         
     	embargoClear = prefs.getBoolean("embargoClear", false);
+    	dbReady = prefs.getBoolean("dbReady", false);
 
 	}
 
 	public static void setEmbargoClear(boolean value){
         editor = prefs.edit();
         editor.putBoolean("embargoClear", value);
+        editor.commit();
         embargoClear = value;
+	}
+	
+	public static void setDbReady(boolean value){
+        editor = prefs.edit();
+        editor.putBoolean("dbReady", value);
+        editor.commit();
+        dbReady = value;
 	}
 	
 	public Uri contentValuesToTable(ArrayList<ContentValues> cv, Uri uri){
@@ -68,7 +77,7 @@ public class iBurnApplication extends Application {
 	  	    // 1 -- success, 0 -- error, -1 no data
 	  	    int status = intent.getIntExtra("status", -1);
 	  	    if(status == 1){
-	  	    	dbReady = true;
+	  	    	setDbReady(true);
 	  	    }
 	  	  }
 	 };
