@@ -41,6 +41,7 @@ public class iBurnApplication extends Application {
         
     	embargoClear = prefs.getBoolean("embargoClear", false);
     	dbReady = prefs.getBoolean("dbReady", false);
+    	Log.d("SetGlobalsFromPrefs","dbReady: " + String.valueOf(dbReady) + " embargoClear: " + String.valueOf(embargoClear));
 
 	}
 

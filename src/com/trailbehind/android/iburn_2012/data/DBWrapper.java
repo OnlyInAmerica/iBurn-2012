@@ -79,7 +79,7 @@ class DBWrapper extends SQLiteOpenHelper {
     	db.execSQL("DROP TABLE IF EXISTS " + ArtTable.TABLE_NAME);
 		onCreate(db);
     }
-    /*
+   
     //Comment this out to disable copying database from assets
     @Override
     public synchronized SQLiteDatabase getWritableDatabase() {
@@ -96,21 +96,22 @@ class DBWrapper extends SQLiteOpenHelper {
         	try {
  
     			copyDataBase();
- 				sendDbReadyMessage(1);
+ 
     		} catch (IOException e) {
  
         		throw new Error("Error copying database");
  
         	}
     	}
-    	// signal db copy complete
-    	
+    	if(!FragmentTabsPager.app.dbReady)
+    		sendDbReadyMessage(1);
     	return openDataBase(true);
     }
     
-   */
+   
     
     private void sendDbReadyMessage(int result) { 
+    	  Log.d("DBREADY","Sent");
 	  	  Intent intent = new Intent("dbReady");
 	  	  intent.putExtra("status", result);
 	  	  LocalBroadcastManager.getInstance(FragmentTabsPager.app).sendBroadcast(intent);
@@ -150,6 +151,7 @@ class DBWrapper extends SQLiteOpenHelper {
      * system folder, from where it can be accessed and handled.
      * This is done by transfering bytestream.
      */
+    
     private void copyDataBase() throws IOException{
     	Log.d("CopyDataBase","Copying...");
     	//Open your local db as the input stream

@@ -30,15 +30,19 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -87,7 +91,10 @@ public class CampFragment extends FragmentActivity {
             CursorLoaderListFragment list = new CursorLoaderListFragment();
             fm.beginTransaction().add(android.R.id.content, list).commit();
         }
+
     }
+    
+  
 
 
     public static class CursorLoaderListFragment extends PlayaListFragmentBase implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -95,8 +102,13 @@ public class CampFragment extends FragmentActivity {
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
         
+        LoaderManager lm;
+        
         // TextView to display when no ListView items are present
         
+        public void initLoader(){
+        	getLoaderManager().initLoader(0, null, this);
+        }
 
         @Override
         public void restartLoader(){
@@ -111,27 +123,43 @@ public class CampFragment extends FragmentActivity {
 
             // We have a menu item to show in action bar.
             setHasOptionsMenu(true);
-
-            // Create an empty adapter we will use to display the loaded data.
             /*
-            mAdapter = new SimpleCursorAdapter(getActivity(),
-                    android.R.layout.simple_list_item_1, null,
-                    new String[] { CampTable.COLUMN_NAME },
-                    new int[] { android.R.id.text1}, 0);
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
+            	      new IntentFilter("dbReady"));
             */
-            mAdapter = new CampCursorAdapter(getActivity(), null);
-
+            lm = this.getLoaderManager();
             // Start out with a progress indicator.
             //setListShown(false);
 
             // Prepare the loader.  Either re-connect with an existing one,
             // or start a new one.
-            getLoaderManager().initLoader(0, null, this);
-            setListAdapter(mAdapter);
+            if(FragmentTabsPager.app.dbReady){
+            	mAdapter = new CampCursorAdapter(getActivity(), null);
+            	setListAdapter(mAdapter);
+            	getLoaderManager().initLoader(0, null, this);
+            }
+            // Else, this will be done on dbReady signal
+            
             ListView lv = getListView();
             lv.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
             lv.setFastScrollEnabled(true);
         }
+        
+        private BroadcastReceiver dbReadyReceiver = new BroadcastReceiver() {
+        	  @Override
+        	  public void onReceive(Context context, Intent intent) {
+        	    // 1 -- success, 0 -- error, -1 no data
+        	    int status = intent.getIntExtra("status", -1);
+        	    if(status == 1){
+        	    	mAdapter = new CampCursorAdapter(getActivity(), null);
+                    initLoader();
+        	    	//getLoaderManager().initLoader(0, null, (android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>) lm);
+                    setListAdapter(mAdapter);
+                    //setListShown(true); // may not be necessary
+        	    	
+        	    }
+        	  }
+        	};
 
         // These are the Camp rows that we will retrieve.
         static final String[] CAMP_PROJECTION = new String[] {

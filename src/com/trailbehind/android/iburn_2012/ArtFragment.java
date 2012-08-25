@@ -27,6 +27,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
@@ -34,8 +35,12 @@ import android.support.v4.widget.SimpleCursorAdapter;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -88,42 +93,59 @@ public class ArtFragment extends FragmentActivity {
 
         // This is the Adapter being used to display the list's data.
         ArtCursorAdapter mAdapter;
+        LoaderManager lm;
         
         @Override
         public void restartLoader(){
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
     	 }
         
+        public void initLoader(){
+        	getLoaderManager().initLoader(0, null, this);
+        }
+        
 
         @Override public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-
+            Log.d("ArtFragment","OnActivityCreated");
             // Text to display before ListView is populated
             emptyText.setText("Loading Art");
-
+            lm = this.getLoaderManager();
             // We have a menu item to show in action bar.
             setHasOptionsMenu(true);
-
-            // Create an empty adapter we will use to display the loaded data.
-            /*
-            mAdapter = new SimpleCursorAdapter(getActivity(),
-                    android.R.layout.simple_list_item_1, null,
-                    new String[] { ArtTable.COLUMN_NAME },
-                    new int[] { android.R.id.text1}, 0);
-            */
-            mAdapter = new ArtCursorAdapter(getActivity(), null);
-
             // Start out with a progress indicator.
             //setListShown(false);
-
-            // Prepare the loader.  Either re-connect with an existing one,
-            // or start a new one.
-            getLoaderManager().initLoader(0, null, this);
-            setListAdapter(mAdapter);
+            /*
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
+            	      new IntentFilter("dbReady"));
+            */
+            if(FragmentTabsPager.app.dbReady){
+            	mAdapter = new ArtCursorAdapter(getActivity(), null);
+            	initLoader();
+            	//getLoaderManager().initLoader(0, null, this);
+                setListAdapter(mAdapter);
+        	}
+	    	
+            
             ListView lv = getListView();
             lv.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
             lv.setFastScrollEnabled(true);
         }
+        
+        private BroadcastReceiver dbReadyReceiver = new BroadcastReceiver() {
+        	  @Override
+        	  public void onReceive(Context context, Intent intent) {
+        	    // 1 -- success, 0 -- error, -1 no data
+        	    int status = intent.getIntExtra("status", -1);
+        	    if(status == 1){
+        	    	mAdapter = new ArtCursorAdapter(getActivity(), null);
+                    initLoader();
+        	    	//getLoaderManager().initLoader(0, null, this);
+                    setListAdapter(mAdapter);
+        	    	
+        	    }
+        	  }
+        	};
 
         // These are the Camp rows that we will retrieve.
         static final String[] ART_PROJECTION = new String[] {

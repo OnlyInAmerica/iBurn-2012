@@ -43,6 +43,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -135,7 +136,11 @@ public class OpenStreetMapFragment extends Fragment {
 	
 	// Zoom Constants
 	final static int PINS_AT_ZOOM = 17;
-	final static int EMBARGO_MAX_ZOOM = 15;
+	
+	Resources res;
+    
+    private SharedPreferences prefs;
+	private SharedPreferences.Editor editor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,6 +152,21 @@ public class OpenStreetMapFragment extends Fragment {
    
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    	
+    	Resources res = getResources();
+        prefs = getActivity().getSharedPreferences("PREFS", 0);
+        editor = prefs.edit();
+
+        
+        if(prefs.getBoolean("first_timer", true)){
+        	editor.putBoolean("first_timer", false);
+	        editor.commit();
+	        new AlertDialog.Builder(getActivity())
+            .setTitle("Welcome to iBurn!")
+            .setMessage("iBurn will activate as you get closer to the Playa. Art, Camp, and Event data is currently loading.")
+            .setPositiveButton("Okay!", null)
+            .show();
+        }
     	
     	// http://iburn.s3.amazonaws.com/2012
     	final MapTileProviderBasic tileProvider = new MapTileProviderBasic(FragmentTabsPager.app);
@@ -191,6 +211,7 @@ public class OpenStreetMapFragment extends Fragment {
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
 				Log.d("Zoom:",String.valueOf(arg0.getZoomLevel()) + " dbReady: + " + String.valueOf(FragmentTabsPager.app.dbReady) +" embargoed: " + String.valueOf(FragmentTabsPager.app.embargoClear));
+				// if EmbargoClear, allow poi points
 				if(FragmentTabsPager.app.dbReady && FragmentTabsPager.app.embargoClear){
 					if(poiOverlay == null)
 						setPoiLayer();
@@ -204,14 +225,7 @@ public class OpenStreetMapFragment extends Fragment {
 					
 					return false;
 				}
-				// If embargoed, limit zoom level
-				else if(!FragmentTabsPager.app.embargoClear){
-					if(arg0.getZoomLevel() <= EMBARGO_MAX_ZOOM){
-						return false;
-					}
-					else
-						return true;
-				}
+
 				return false;
 			}
     		
@@ -334,7 +348,7 @@ public class OpenStreetMapFragment extends Fragment {
   	    // 1 -- success, 0 -- error, -1 no data
   	    int status = intent.getIntExtra("status", -1);
   	    if(status == 1){
-  	    	
+  	    	setPoiLayer();
   	    }
   	  }
   	};
@@ -422,7 +436,7 @@ public class OpenStreetMapFragment extends Fragment {
                      else{
                     	 if(distance != 0){
                  			double rounded_distance = ((int) ((distance * 10) + 0.5)) / 10;
-                 			((TextView)container.findViewById(R.id.map_placeholder_text)).setText("You are " + String.valueOf(rounded_distance) + " miles from the man.");
+                 			//((TextView)container.findViewById(R.id.map_placeholder_text)).setText("You are " + String.valueOf(rounded_distance) + " miles from the man.");
                  		}
                      }
 

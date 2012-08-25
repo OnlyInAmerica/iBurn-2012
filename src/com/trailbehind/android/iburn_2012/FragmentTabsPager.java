@@ -51,6 +51,7 @@ public class FragmentTabsPager extends FragmentActivity {
     
     private SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
+	
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,18 +89,19 @@ public class FragmentTabsPager extends FragmentActivity {
         }
         
         // TODO: Populate database on first start
+        /*
         res = getResources();
         prefs = getSharedPreferences("PREFS", 0);
         editor = prefs.edit();
-        
+        */
         // Load json into db
-        new DataUtils.ImportJsonToCampTable().execute();
-        
-        if(prefs.getBoolean("first_timer", true)){
+        //new DataUtils.ImportJsonToCampTable().execute();
+        /*
+        if(prefs.getBoolean("dbReady", true)){
         	new DataUtils.ImportJsonToCampTable().execute();
         	editor.putBoolean("first_timer", false);
 	        editor.commit();
-        }
+        }*/
         
         
     }

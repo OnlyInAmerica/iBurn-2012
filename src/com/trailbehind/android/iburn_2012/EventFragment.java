@@ -32,14 +32,19 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -90,6 +95,8 @@ public class EventFragment extends FragmentActivity {
         // This is the Adapter being used to display the list's data.
         SimpleCursorAdapter mAdapter;
         
+        LoaderManager lm;
+        
         public static Integer[] daySections = new Integer[8];
         // Burning man start date. WHY are months zero-based?
         GregorianCalendar cal = new GregorianCalendar(2012, 7, 28, 0, 0);
@@ -98,6 +105,10 @@ public class EventFragment extends FragmentActivity {
         public void restartLoader(){
         	getLoaderManager().restartLoader(0, null, CursorLoaderListFragment.this);
     	 }
+        
+        public void initLoader(){
+        	getLoaderManager().initLoader(0, null, this);
+        }
 
 
         @SuppressLint("NewApi")
@@ -113,17 +124,23 @@ public class EventFragment extends FragmentActivity {
             
             // Start out with a progress indicator.
             //setListShown(false);
-
-            // Prepare the loader.  Either re-connect with an existing one,
-            // or start a new one.
-            getLoaderManager().initLoader(0, null, this);
-        	
+            /*
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
+            	      new IntentFilter("dbReady"));
+            */
+            lm = this.getLoaderManager();
+            if(FragmentTabsPager.app.dbReady){
+            	mAdapter = new EventCursorAdapter(getActivity(), null);
+                initLoader();
+            	//getLoaderManager().initLoader(0, null, (android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>) lm);
+                setListAdapter(mAdapter);
+            }
+        	// Else LoaderManager will be started on dbReady signal
+            
             // Set up SectionIndexer by date
             if(!sectionsSet)
                 setSections();
             
-            mAdapter = new EventCursorAdapter(getActivity(), null);
-            setListAdapter(mAdapter);
             ListView lv = getListView();
             lv.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
             if(Build.VERSION.SDK_INT > 15){
@@ -132,6 +149,21 @@ public class EventFragment extends FragmentActivity {
             }
             lv.setFastScrollEnabled(true);
         }
+        
+        private BroadcastReceiver dbReadyReceiver = new BroadcastReceiver() {
+      	  @Override
+      	  public void onReceive(Context context, Intent intent) {
+      	    // 1 -- success, 0 -- error, -1 no data
+      	    int status = intent.getIntExtra("status", -1);
+      	    if(status == 1){
+      	    	mAdapter = new EventCursorAdapter(getActivity(), null);
+                initLoader();  
+      	    	//getLoaderManager().initLoader(0, null, (android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>) lm);
+                setListAdapter(mAdapter);
+      	    	
+      	    }
+      	  }
+      	};
 
         // These are the Camp rows that we will retrieve.
         static final String[] EVENT_PROJECTION = new String[] {
