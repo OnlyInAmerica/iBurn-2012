@@ -146,9 +146,9 @@ public class OpenStreetMapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
-      	      new IntentFilter("dbReady"));
     }
+    
+    
    
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -266,6 +266,8 @@ public class OpenStreetMapFragment extends Fragment {
     @Override
     public void onResume(){
     	super.onResume();
+    	LocalBroadcastManager.getInstance(getActivity()).registerReceiver(dbReadyReceiver,
+        	      new IntentFilter("dbReady"));
     	if(!FragmentTabsPager.app.embargoClear){
     		Log.d("Embargo","NOT CLEAR");
     		//Embargo NOT clear
@@ -289,6 +291,7 @@ public class OpenStreetMapFragment extends Fragment {
     @Override
     public void onPause(){
     	super.onPause();
+    	LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(dbReadyReceiver);
     	if(FragmentTabsPager.app.embargoClear)
     		mLocationOverlay.disableMyLocation();
     	

@@ -321,7 +321,7 @@ public class CampFragment extends FragmentActivity {
         			null);
         	if(result.moveToFirst()){
         		
-        	}
+        	
         		LayoutInflater layoutInflater = (LayoutInflater)FragmentTabsPager.app.getSystemService(FragmentTabsPager.app.LAYOUT_INFLATER_SERVICE); 
    			 	View popup = layoutInflater.inflate(R.layout.popup, null); 
         		
@@ -363,6 +363,7 @@ public class CampFragment extends FragmentActivity {
 	        			
 	        		});
 	        	}
+        	
 	        	View favoriteBtn = popup.findViewById(R.id.favorite_button);
 	        	int isFavorite = result.getInt(result.getColumnIndex(CampTable.COLUMN_FAVORITE));
 	        	if(isFavorite == 1)
@@ -400,6 +401,7 @@ public class CampFragment extends FragmentActivity {
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
 	        	result.close();
+        	}// if moveToFirst
         }
     }
 
