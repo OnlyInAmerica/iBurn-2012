@@ -399,6 +399,7 @@ public class CampFragment extends FragmentActivity {
 	        
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
+	        	result.close();
         }
     }
 

@@ -295,6 +295,7 @@ public class ArtFragment extends FragmentActivity {
 	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(listView, Gravity.CENTER, 0, 0);
+	        	result.close();
         	}
         }
     }

@@ -322,7 +322,7 @@ public class OpenStreetMapFragment extends Fragment {
 
         	}while(camps.moveToNext());
         }
-
+        camps.close();
         return items;
     }
     
