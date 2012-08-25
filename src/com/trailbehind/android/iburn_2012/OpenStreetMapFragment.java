@@ -34,9 +34,11 @@ import com.trailbehind.android.iburn_2012.data.DataUtils;
 import com.trailbehind.android.iburn_2012.data.JSONDeserializers;
 import com.trailbehind.android.iburn_2012.data.PlayaContentProvider;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -50,17 +52,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -182,9 +190,10 @@ public class OpenStreetMapFragment extends Fragment {
 
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
-				Log.d("Zoom:",String.valueOf(arg0.getZoomLevel()));
+				Log.d("Zoom:",String.valueOf(arg0.getZoomLevel()) + " dbReady: + " + String.valueOf(FragmentTabsPager.app.dbReady) +" embargoed: " + String.valueOf(FragmentTabsPager.app.embargoClear));
 				if(FragmentTabsPager.app.dbReady && FragmentTabsPager.app.embargoClear){
-					if(poiOverlay != null){
+					if(poiOverlay == null)
+						setPoiLayer();
 						if(arg0.getZoomLevel() > OpenStreetMapFragment.PINS_AT_ZOOM){
 							if(!mapView.getOverlays().contains(poiOverlay))
 								mapView.getOverlays().add(poiOverlay);
@@ -192,7 +201,7 @@ public class OpenStreetMapFragment extends Fragment {
 							if(mapView.getOverlays().contains(poiOverlay))
 								mapView.getOverlays().remove(poiOverlay);
 						}
-					}
+					
 					return false;
 				}
 				// If embargoed, limit zoom level
@@ -432,6 +441,11 @@ public class OpenStreetMapFragment extends Fragment {
  	
  	public static void centerMap(GeoPoint point){
  		//mapController.animateTo(point);
- 		mapController.zoomInFixing(point);
+ 		mapController.setCenter(point);
+ 		mapController.zoomIn();
+ 		//mapController.zoomInFixing(point);
  	}
+
+ 	
+ 	
 }   

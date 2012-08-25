@@ -73,6 +73,8 @@ import android.widget.TextView;
 @SuppressWarnings("all")
 public class CampFragment extends FragmentActivity {
 	public static Context c;
+	
+	public static PopupWindow pw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,7 +282,7 @@ public class CampFragment extends FragmentActivity {
         
         
         public static void showCampPopup(View parent, String camp_id){
-        	
+        	Log.d("CampQuery",camp_id);
         	Cursor result = FragmentTabsPager.app.getContentResolver().query((PlayaContentProvider.CAMP_URI.buildUpon().appendPath(camp_id).build()), 
         			new String[] {CampTable.COLUMN_NAME, CampTable.COLUMN_DESCRIPTION, 
         						  CampTable.COLUMN_LATITUDE, CampTable.COLUMN_LONGITUDE, 
@@ -322,9 +324,10 @@ public class CampFragment extends FragmentActivity {
 						@Override
 						public boolean onTouch(View v, MotionEvent me) {
 							if(me.getAction() == MotionEvent.ACTION_DOWN){
-								Log.d("Popup","Click");
+								Log.d("Popup","Click " + v.getTag(R.id.view_location_link).toString());
 								FragmentTabsPager.mViewPager.setCurrentItem(0);
 								OpenStreetMapFragment.centerMap((GeoPoint)v.getTag(R.id.view_location_link));
+								pw.dismiss();
 								return true;
 							}
 							return false;
@@ -364,7 +367,8 @@ public class CampFragment extends FragmentActivity {
 	    			 
 	    		 });
 	        	
-	        	PopupWindow pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        	pw = new PopupWindow(popup,LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT, true);
+	        
 	        	pw.setBackgroundDrawable(new BitmapDrawable());
 	        	pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }
