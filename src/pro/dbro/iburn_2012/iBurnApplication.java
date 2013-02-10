@@ -31,7 +31,7 @@ public class iBurnApplication extends Application {
 	private static SharedPreferences prefs;
 	private static SharedPreferences.Editor editor;
 	static Resources res;
-	
+
 	
 	@Override
 	public void onCreate(){

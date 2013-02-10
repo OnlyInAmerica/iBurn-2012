@@ -38,7 +38,7 @@ public class DataUtils {
 	
 	public static final double MAN_DISTANCE_THRESHOLD = 3; // miles
 	
-	public static class ImportJsonToCampTable extends AsyncTask<Void, Void, Integer>{
+	public static class PopulateDBFromJsonTask extends AsyncTask<Void, Void, Integer>{
 		// This method is executed in a separate thread
 		@Override
 		protected Integer doInBackground(Void... input) {

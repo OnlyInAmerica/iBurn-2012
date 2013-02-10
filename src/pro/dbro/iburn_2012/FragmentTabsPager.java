@@ -78,31 +78,23 @@ public class FragmentTabsPager extends FragmentActivity {
                 CampFragment.CursorLoaderListFragment.class, null);
         mTabsAdapter.addTab(mTabHost.newTabSpec("events").setIndicator("Events"),
                 EventFragment.CursorLoaderListFragment.class, null);
-        
-        /*
-        mTabsAdapter.addTab(mTabHost.newTabSpec("events").setIndicator("Events"),
-                LoaderCustomSupport.AppListFragment.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("art").setIndicator("Art"),
-                LoaderThrottleSupport.ThrottledLoaderListFragment.class, null);
-	*/
+
         if (savedInstanceState != null) {
             mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
         }
-        
-        // TODO: Populate database on first start
-        
+                
         res = getResources();
         prefs = getSharedPreferences("PREFS", 0);
         editor = prefs.edit();
-        
-        // Load json into db
-        //new DataUtils.ImportJsonToCampTable().execute();
-        
+
+        /*
+         * Uncomment this to populate initial data from JSON
+         * If you do this, comment out DBWrapper.getWritableDatabase()
+         * to avoid also copying bundled pre-populated database
         if(prefs.getBoolean("dbReady", false)){
-        	new DataUtils.ImportJsonToCampTable().execute();
-        	//editor.putBoolean("first_timer", false);
-	        //editor.commit();
+        	new DataUtils.PopulateDBFromJsonTask().execute();
         }
+        */
         
         
     }

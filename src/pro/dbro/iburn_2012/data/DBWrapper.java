@@ -40,11 +40,12 @@ class DBWrapper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     
     // typically /data/data/<namespace>/databases
-    private static String DATABASE_DESTINATION_PATH = "/data/data/pro.dbro.iburn_2012/databases/";
+    private static String DATABASE_DESTINATION_PATH;
     
     private SQLiteDatabase mDB; 
     
     private boolean sentReady = false;
+    private boolean copying = false; // don't allow copying to be called more than once
     
     //TABLE INFO
     // public static final String CREATE_TABLE_STATEMENT = CampTable.CREATE_TABLE_STATEMENT;
@@ -57,6 +58,7 @@ class DBWrapper extends SQLiteOpenHelper {
      */
     public DBWrapper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        DATABASE_DESTINATION_PATH = context.getDatabasePath(DATABASE_NAME).getAbsolutePath();
         //Log.d("DataBaseDir ",
     }
     
@@ -85,7 +87,7 @@ class DBWrapper extends SQLiteOpenHelper {
     	db.execSQL("DROP TABLE IF EXISTS " + ArtTable.TABLE_NAME);
 		onCreate(db);
     }
-   /*
+   
     //Comment this out to disable copying database from assets
     @Override
     public synchronized SQLiteDatabase getWritableDatabase() {
@@ -114,8 +116,6 @@ class DBWrapper extends SQLiteOpenHelper {
     		sendDbReadyMessage(1);
     	return openDataBase(true);
     }
-    
-   */
     
     private void sendDbReadyMessage(int result) { 
     	  Log.d("DBREADY","Sent");
@@ -193,6 +193,7 @@ class DBWrapper extends SQLiteOpenHelper {
     	SQLiteDatabase checkDB = null;
  
     	try{
+    		Log.i("DB-Dir:", DATABASE_DESTINATION_PATH);
     		File database_dir = new File(DATABASE_DESTINATION_PATH);
     		if(!database_dir.exists()){
     			database_dir.mkdir();
